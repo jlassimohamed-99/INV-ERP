@@ -1,43 +1,69 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 
 const AuthContext = createContext();
 
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
+
+  const navigateBasedOnRole = useCallback((role) => {
+    switch (role) {
+      case 'admin':
+        navigate('/admin');
+        break;
+      case 'responsable rh':
+        navigate('/hr');
+        break;
+      case 'chef de projet':
+        navigate('/project');
+        break;
+      case 'comptable':
+        navigate('/finance');
+        break;
+      case 'employee':
+        navigate('/employee');
+        break;
+      default:
+        navigate('/');
+    }
+  }, [navigate]);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data = await authService.getCurrentUser();
-        setUser(data);
-      } catch (err) {
-        console.error(err);
+    const fetchCurrentUser = async () => {
+      const user = await authService.getCurrentUser();
+      setCurrentUser(user);
+      if (user) {
+        navigateBasedOnRole(user.role);
       }
     };
-    fetchUser();
-  }, []);
+    fetchCurrentUser();
+  }, [navigateBasedOnRole]);
 
-  const login = async (email, password) => {
-    const data = await authService.login(email, password);
-    setUser(data);
+  const register = async (userData) => {
+    const data = await authService.register(userData);
+    setCurrentUser(data.user);
   };
 
-  const register = async (userDetails) => {
-    const data = await authService.register(userDetails);
-    setUser(data);
+  const login = async (userData) => {
+    const data = await authService.login(userData);
+    setCurrentUser(data.user);
+    navigateBasedOnRole(data.user.role);
   };
 
-  const logout = async () => {
-    await authService.logout();
-    setUser(null);
+  const logout = () => {
+    localStorage.removeItem('token');
+    setCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ currentUser, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);

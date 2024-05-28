@@ -1,31 +1,31 @@
 const express = require('express');
+const cors = require('cors');
 const connectDB = require('./config/db');
-const dotenv = require('dotenv');
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const taskRoutes = require('./routes/taskRoutes');
-const companyRoutes = require('./routes/companyRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-
-dotenv.config();
-
-connectDB();
+require('dotenv').config();
 
 const app = express();
-app.use(express.json());
+
+// Connect Database
+connectDB();
+
+// Middleware
+app.use(express.json({ extended: false }));
+
+// Configure CORS
+app.use(cors({
+  origin: 'http://localhost:3000'  // Allow requests from this origin
+}));
+
+// Define Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/tasks', require('./routes/taskRoutes'));
+app.use('/api/companies', require('./routes/companyRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/departments', require('./routes/departmentRoutes'));
+
+// ... other routes and middleware
 
 const PORT = process.env.PORT || 5000;
-
-app.use('/api/auth', authRoutes); 
-app.use('/api/users', userRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/companies', companyRoutes);
-app.use('/api/payments', paymentRoutes);
-
-app.get('/', (req, res) => {
-    res.send('Server is running');
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

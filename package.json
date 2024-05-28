@@ -2,10 +2,13 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "nodemon": "^3.1.1"
-  }
-  ,"scripts": {
+  },
+  "scripts": {
     "client": "cd client && npm start",
     "server": "cd server && npm run server",
     "dev": "concurrently \"npm run server\" \"npm run client\""
-  }  
+  },
+  "dependencies": {
+    "react-router-dom": "^6.23.1"
+  }
 }

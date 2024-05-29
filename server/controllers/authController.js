@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');  
+const config = require('config');
+const User = require('../models/userModel');
 
-// Register a new user
-exports.register = async (req, res) => {
+// Register user
+const register = async (req, res) => {
   const { user_id, name, email, password, role, phone } = req.body;
 
   try {
@@ -22,17 +23,21 @@ exports.register = async (req, res) => {
       phone
     });
 
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
     await user.save();
 
     const payload = {
       user: {
-        id: user.id
+        id: user.id,
+        role: user.role
       }
     };
 
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      config.get('jwtSecret'),
       { expiresIn: '5h' },
       (err, token) => {
         if (err) throw err;
@@ -41,12 +46,12 @@ exports.register = async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send('Server error');
   }
 };
 
 // Authenticate user and get token
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -71,7 +76,7 @@ exports.login = async (req, res) => {
 
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      config.get('jwtSecret'),
       { expiresIn: '5h' },
       (err, token) => {
         if (err) throw err;
@@ -80,17 +85,23 @@ exports.login = async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send('Server error');
   }
 };
 
-// Get user by token
-exports.getUser = async (req, res) => {
+// Get current user
+const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send('Server error');
   }
+};
+
+module.exports = {
+  register,
+  login,
+  getCurrentUser
 };

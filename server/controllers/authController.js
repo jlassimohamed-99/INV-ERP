@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('config');
+require('dotenv').config();
 const User = require('../models/userModel');
+
+const jwtSecret = process.env.JWT_SECRET;
 
 // Register user
 const register = async (req, res) => {
@@ -37,7 +39,7 @@ const register = async (req, res) => {
 
     jwt.sign(
       payload,
-      config.get('jwtSecret'),
+      jwtSecret,
       { expiresIn: '5h' },
       (err, token) => {
         if (err) throw err;
@@ -76,7 +78,7 @@ const login = async (req, res) => {
 
     jwt.sign(
       payload,
-      config.get('jwtSecret'),
+      jwtSecret,
       { expiresIn: '5h' },
       (err, token) => {
         if (err) throw err;
@@ -89,19 +91,7 @@ const login = async (req, res) => {
   }
 };
 
-// Get current user
-const getCurrentUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    res.json(user);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-};
-
 module.exports = {
   register,
-  login,
-  getCurrentUser
+  login
 };

@@ -11,9 +11,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await login({ email, password });
-      console.log(response); // Use the response variable for debugging
-      navigate('/');
+      await login({ email, password });
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
     }

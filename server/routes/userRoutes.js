@@ -15,7 +15,5 @@ router.put('/:id', updateUser);
 // Soft delete user by ID
 router.delete('/:id', deleteUser);
 
-// Get current user
-router.get('/me', authMiddleware, getCurrentUser);
 
 module.exports = router;

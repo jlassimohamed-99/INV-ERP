@@ -1,12 +1,13 @@
 import React from 'react';
+import UserManagement from '../UserManagement'; // Ensure this component handles CRUD operations
 
-function AdminDashboard() {
+const AdminDashboard = () => {
   return (
     <div>
       <h2>Admin Dashboard</h2>
-      {/* Add admin specific components and functionalities here */}
+      <UserManagement />
     </div>
   );
-}
+};
 
 export default AdminDashboard;

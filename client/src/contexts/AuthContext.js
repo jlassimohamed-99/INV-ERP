@@ -4,9 +4,7 @@ import authService from '../services/authService';
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -58,7 +56,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setCurrentUser(null);
+    navigate('/login'); // Ensure redirection to login on logout
   };
 
   return (

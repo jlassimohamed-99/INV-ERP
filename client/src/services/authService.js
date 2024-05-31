@@ -1,36 +1,42 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth'; // Ensure this URL matches your backend
+const authService = {
 
-// Register user
-const register = async (userData) => {
-  const response = await axios.post(`${API_URL}/register`, userData);
-  return response.data;
-};
+  login: async (userData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', userData);
+      const user = response.data.user;
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', response.data.token); // Save token to localStorage
+      return { user };
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
 
-// Login user
-const login = async (userData) => {
-  const response = await axios.post(`${API_URL}/login`, userData);
-  if (response.data.token) {
-    localStorage.setItem('token', response.data.token);
+  register: async (userData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      const user = response.data.user;
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', response.data.token); // Save token to localStorage
+      return { user };
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
+    }
+  },
+
+  getCurrentUser: async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      return user;
+    } catch (error) {
+      console.error('Get current user error:', error);
+      return null;
+    }
   }
-  return response.data;
 };
 
-// Get current user
-const getCurrentUser = async () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    const response = await axios.get(`${API_URL}/me`, {
-      headers: { 'x-auth-token': token }
-    });
-    return response.data;
-  }
-  return null;
-};
-
-export default {
-  register,
-  login,
-  getCurrentUser
-};
+export default authService;

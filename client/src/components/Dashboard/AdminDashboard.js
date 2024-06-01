@@ -1,11 +1,11 @@
 import React from 'react';
-import UserManagement from '../UserManagement'; // Ensure this component handles CRUD operations
+import Navbar from '../Navbar'; // Ensure the path to Navbar is correct
 
 const AdminDashboard = () => {
   return (
     <div>
-      <h2>Admin Dashboard</h2>
-      <UserManagement />
+      <Navbar />
+      <h1>Admin Dashboard</h1>
     </div>
   );
 };

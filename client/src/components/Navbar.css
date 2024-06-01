@@ -1,0 +1,25 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+  }
+  
+  .navbar-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-right button {
+    margin-left: 10px;
+  }
+  
+  .navbar h1 {
+    margin: 0;
+  }
+  

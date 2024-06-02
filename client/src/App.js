@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import Navbar from './components/Navbar'; // Navbar importé ici
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import AdminDashboard from './components/Dashboard/AdminDashboard';
@@ -16,7 +15,6 @@ import './App.css';
 function App() {
   return (
     <AuthProvider>
-      <Navbar /> {/* Utilisation de Navbar ici */}
       <div className="app-container">
         <Routes>
           <Route path="/" element={<Login />} />

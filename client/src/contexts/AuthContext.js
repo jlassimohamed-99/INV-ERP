@@ -56,27 +56,13 @@ export const AuthProvider = ({ children }) => {
     navigateBasedOnRole(data.user.role);
   };
 
-  const logout = useCallback(() => {
+  const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    setCurrentUser(null);
     navigate('/login');
-  }, [navigate]);
+  };
 
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const user = await authService.getCurrentUser(token);
-          setCurrentUser(user);
-        } catch (error) {
-          console.error('Failed to fetch user:', error);
-          logout();
-        }
-      }
-    };
-    fetchCurrentUser();
-  }, [logout]);
   return (
     <AuthContext.Provider value={{ currentUser, register, login, logout }}>
       {children}

@@ -1,18 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './AdminDashboard.css';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../Navbar';
 
-function AdminDashboard() {
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="admin-dashboard">
-      <h1>Admin Dashboard</h1>
-      <ul>
-        <li><Link to="/hr">Ressources Humaines</Link></li>
-        <li><Link to="/project">Gestion des Projets</Link></li>
-        <li><Link to="/finance">Comptabilité</Link></li>
-      </ul>
+    <div>
+      <Navbar />
+      <div style={{ display: 'flex', justifyContent: 'space-around', padding: '20px' }}>
+        <button onClick={() => navigate('/hr')}>Employee HR</button>
+        <button onClick={() => navigate('/finance')}>Finance</button>
+        <button onClick={() => navigate('/project')}>Project</button>
+      </div>
     </div>
   );
-}
+};
 
 export default AdminDashboard;

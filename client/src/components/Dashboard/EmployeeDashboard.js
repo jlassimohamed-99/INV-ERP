@@ -4,7 +4,7 @@ function EmployeeDashboard() {
   return (
     <div>
       <h2>Employee Dashboard</h2>
-      {/* Add employee specific components and functionalities here */}
+      <p>Welcome to the employee dashboard!</p>
     </div>
   );
 }

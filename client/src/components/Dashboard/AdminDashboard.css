@@ -1,0 +1,65 @@
+/* General styles */
+body {
+    background-color: #f5f5dc; /* Light beige background */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Dashboard container */
+  .dashboard-container {
+    padding: 20px;
+  }
+  
+  /* Dashboard header */
+  .dashboard-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #6a4fc6; /* Purple text */
+  }
+  
+  /* Logout button */
+  .logout-button {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 10px 20px;
+    background-color: #ff4d4d; /* Red background */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .logout-button:hover {
+    background-color: #e60000;
+  }
+  
+  /* Dashboard content */
+  .dashboard-content {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  
+  /* Dashboard item */
+  .dashboard-item {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    flex: 1 1 30%;
+    max-width: 300px;
+    text-align: center;
+  }
+  
+  .dashboard-item h3 {
+    color: #6a4fc6; /* Purple text */
+    margin-bottom: 10px;
+  }
+  
+  .dashboard-item p {
+    color: #333;
+  }
+  

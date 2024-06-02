@@ -1,81 +1,84 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import './Register.css';
 
 function Register() {
-  const [userData, setUserData] = useState({
-    user_id: '',
-    name: '',
-    email: '',
-    password: '',
-    role: '',
-    phone: ''
-  });
+  const [user_id, setUserId] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('employee');
+  const [phone, setPhone] = useState('');
   const { register } = useAuth();
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await register(userData);
-      navigate('/login');
-    } catch (err) {
-      console.error(err);
+      await register({ user_id, name, email, password, role, phone });
+    } catch (error) {
+      console.error('Failed to register:', error);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
+    <div className="register-container">
+      <div className="register-form">
         <h2>Register</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="user_id"
-            placeholder="User ID"
-            value={userData.user_id}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={userData.name}
-            onChange={handleChange}
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={userData.email}
-            onChange={handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={userData.password}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="role"
-            placeholder="Role"
-            value={userData.role}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="phone"
-            placeholder="Phone"
-            value={userData.phone}
-            onChange={handleChange}
-          />
+          <div className="form-group">
+            <label>User ID</label>
+            <input
+              type="text"
+              value={user_id}
+              onChange={(e) => setUserId(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Role</label>
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="admin">Admin</option>
+              <option value="responsable rh">Responsable RH</option>
+              <option value="chef de projet">Chef de Projet</option>
+              <option value="comptable">Comptable</option>
+              <option value="employee">Employee</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Phone</label>
+            <input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
           <button type="submit">Register</button>
         </form>
       </div>

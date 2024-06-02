@@ -1,10 +1,11 @@
 import React from 'react';
+import KanbanBoard from '..//KanbanBoard';
 
 function ProjectDashboard() {
   return (
     <div>
       <h2>Project Manager Dashboard</h2>
-      {/* Add project manager specific components and functionalities here */}
+      <KanbanBoard />
     </div>
   );
 }

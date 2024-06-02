@@ -1,99 +1,98 @@
 /* General styles */
 body {
-    background-color: #00a676; /* Green background */
-    font-family: Arial, sans-serif;
-    margin: 0;
-    height: 100vh; /* Ensures the body takes the full height of the viewport */
-  }
-  
-  /* Form container */
-  .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Ensures the container takes the full height of the viewport */
-  }
-  
-  /* Form */
-  .login-form {
-    background-color: #6a4fc6; /* Purple background */
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-    color: white;
-  }
-  
-  .login-form h2 {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .input-icon {
-    position: relative;
-  }
-  
-  .input-icon input {
-    width: 100%;
-    padding: 10px 40px 10px 10px;
-    border: none;
-    border-radius: 5px;
-    box-sizing: border-box;
-  }
-  
-  .input-icon i {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc;
-  }
-  
-  .form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .form-options label {
-    display: flex;
-    align-items: center;
-  }
-  
-  .form-options a {
-    color: #ccc;
-    text-decoration: none;
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #fff;
-    color: #6a4fc6;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  button:hover {
-    background-color: #ddd;
-  }
-  
-  .login-form p {
-    margin-top: 15px;
-    color: #ccc;
-  }
-  
-  .login-form p a {
-    color: #fff;
-    text-decoration: none;
-  }
-  
+  background-color: #00a676; /* Green background */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh; /* Ensures the body takes the full height of the viewport */
+}
+
+/* Form container */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ensures the container takes the full height of the viewport */
+}
+
+/* Form */
+.auth-form {
+  background-color: #6a4fc6; /* Purple background */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  color: white;
+}
+
+.auth-form h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.input-icon {
+  position: relative;
+}
+
+.input-icon input {
+  width: 100%;
+  padding: 10px 40px 10px 10px;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.input-icon i {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-options label {
+  display: flex;
+  align-items: center;
+}
+
+.form-options a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #fff;
+  color: #6a4fc6;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #ddd;
+}
+
+.auth-form p {
+  margin-top: 15px;
+  color: #ccc;
+}
+
+.auth-form p a {
+  color: #fff;
+  text-decoration: none;
+}

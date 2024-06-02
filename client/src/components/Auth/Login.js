@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import './Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -52,7 +53,9 @@ function Login() {
           </div>
           <button type="submit">Login</button>
         </form>
-        
+        <p>
+          Don't have an account? <a href="/register">Register</a>
+        </p>
       </div>
     </div>
   );

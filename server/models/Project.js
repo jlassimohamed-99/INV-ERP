@@ -1,20 +1,31 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-const ProjectSchema = new Schema({
-  name: { type: String, required: true, unique: true },
-  description: { type: String },
-  createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
-  startDate: { type: Date },
-  endDate: { type: Date },
-  status: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+const ProjectSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  startDate: {
+    type: Date
+  },
+  endDate: {
+    type: Date
+  },
+  status: {
+    type: String,
+    enum: ['active', 'completed', 'pending'],
+    default: 'pending'
+  }
 });
 
-ProjectSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
+const Project = mongoose.model('Project', ProjectSchema);
 
-module.exports = mongoose.model('Project', ProjectSchema);
+module.exports = Project;

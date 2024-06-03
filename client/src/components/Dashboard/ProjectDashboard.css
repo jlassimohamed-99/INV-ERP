@@ -1,0 +1,62 @@
+/* ProjectDashboard.css */
+.project-dashboard {
+    padding: 20px;
+  }
+  
+  .tabs {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .tabs button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+  .tabs button:hover {
+    background-color: #ddd;
+  }
+  
+  .content {
+    margin-top: 20px;
+  }
+  
+  .project-list .card {
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .add-project-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .add-project-form label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .add-project-form input,
+  .add-project-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .add-project-form button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .add-project-form button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -1,36 +1,13 @@
+// routes/projectRoutes.js
 const express = require('express');
 const router = express.Router();
-const Project = require('../models/Project');
+const { getAllProjects, getProjectById, createProject, updateProject, deleteProject } = require('../controllers/projectController');
+const auth = require('../middlewares/authMiddleware');
 
-// Example route to get all projects
-router.get('/', async (req, res) => {
-  try {
-    const projects = await Project.find();
-    res.json(projects);
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
-
-// Example route to create a new project
-router.post('/', async (req, res) => {
-  const { name, description, createdBy, startDate, endDate, status } = req.body;
-
-  try {
-    const newProject = new Project({
-      name,
-      description,
-      createdBy,
-      startDate,
-      endDate,
-      status
-    });
-
-    const project = await newProject.save();
-    res.json(project);
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
+router.get('/', auth, getAllProjects);
+router.get('/:id', auth, getProjectById);
+router.post('/', auth, createProject);
+router.put('/:id', auth, updateProject);
+router.delete('/:id', auth, deleteProject);
 
 module.exports = router;

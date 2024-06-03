@@ -1,83 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { Bar, Line } from 'react-chartjs-2';
+import { Card, CardContent, Typography, Button, IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import './FinanceDashboard.css';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const FinanceDashboard = () => {
-  const [factures, setFactures] = useState([]);
-  const [devis, setDevis] = useState([]);
-  const [declarations, setDeclarations] = useState([]);
-  const [depenses, setDepenses] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const facturesResponse = await axios.get('http://localhost:5000/api/factures/', {
-          headers: {
-            'x-auth-token': localStorage.getItem('token')
-          }
-        });
-        setFactures(facturesResponse.data);
+  const handleDelete = (id) => {
+    // Implement the delete logic here
+    console.log(`Delete item with id: ${id}`);
+  };
 
-        const devisResponse = await axios.get('http://localhost:5000/api/devis/', {
-          headers: {
-            'x-auth-token': localStorage.getItem('token')
-          }
-        });
-        setDevis(devisResponse.data);
-
-        const declarationsResponse = await axios.get('http://localhost:5000/api/declarations/', {
-          headers: {
-            'x-auth-token': localStorage.getItem('token')
-          }
-        });
-        setDeclarations(declarationsResponse.data);
-
-        const depensesResponse = await axios.get('http://localhost:5000/api/depenses/', {
-          headers: {
-            'x-auth-token': localStorage.getItem('token')
-          }
-        });
-        setDepenses(depensesResponse.data);
-      } catch (err) {
-        console.error(err);
+  const facturationData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    datasets: [
+      {
+        label: 'Facturation',
+        backgroundColor: 'rgba(75,192,192,1)',
+        borderColor: 'rgba(75,192,192,1)',
+        data: [65, 59, 80, 81, 56, 55]
       }
-    };
-    fetchData();
-  }, []);
+    ]
+  };
+
+  const depensesData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    datasets: [
+      {
+        label: 'Dépenses',
+        backgroundColor: 'rgba(255,99,132,1)',
+        borderColor: 'rgba(255,99,132,1)',
+        data: [35, 45, 60, 70, 46, 33]
+      }
+    ]
+  };
+
+  const devisData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    datasets: [
+      {
+        label: 'Devis',
+        backgroundColor: 'rgba(153,102,255,1)',
+        borderColor: 'rgba(153,102,255,1)',
+        data: [20, 30, 50, 40, 70, 60]
+      }
+    ]
+  };
 
   return (
-    <div>
-      <h2>Finance Dashboard</h2>
-      <div>
-        <h3>Facturation</h3>
-        <ul>
-          {factures.map(facture => (
-            <li key={facture._id}>{facture.name}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h3>Gestion des Devis</h3>
-        <ul>
-          {devis.map(devis => (
-            <li key={devis._id}>{devis.name}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h3>Déclaration Fiscales</h3>
-        <ul>
-          {declarations.map(declaration => (
-            <li key={declaration._id}>{declaration.name}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h3>Gestion des Dépenses</h3>
-        <ul>
-          {depenses.map(depense => (
-            <li key={depense._id}>{depense.name}</li>
-          ))}
-        </ul>
+    <div className="finance-dashboard">
+      <Typography variant="h4" gutterBottom>Finance Dashboard</Typography>
+      
+      <div className="card-container">
+        <Card className="card">
+          <CardContent>
+            <Typography variant="h5" component="h2">Facturation</Typography>
+            <Bar data={facturationData} />
+            <Button variant="contained" onClick={() => navigate('/add-facture')}>Add Facture</Button>
+            <IconButton onClick={() => navigate(`/edit-facture/1`)}><EditIcon /></IconButton>
+            <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
+          </CardContent>
+        </Card>
+
+        <Card className="card">
+          <CardContent>
+            <Typography variant="h5" component="h2">Gestion des Dépenses</Typography>
+            <Line data={depensesData} />
+            <Button variant="contained" onClick={() => navigate('/add-depense')}>Add Depense</Button>
+            <IconButton onClick={() => navigate(`/edit-depense/1`)}><EditIcon /></IconButton>
+            <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
+          </CardContent>
+        </Card>
+
+        <Card className="card">
+          <CardContent>
+            <Typography variant="h5" component="h2">Gestion des Devis</Typography>
+            <Line data={devisData} />
+            <Button variant="contained" onClick={() => navigate('/add-devis')}>Add Devis</Button>
+            <IconButton onClick={() => navigate(`/edit-devis/1`)}><EditIcon /></IconButton>
+            <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

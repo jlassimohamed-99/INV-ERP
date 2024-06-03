@@ -9,9 +9,7 @@ const RoleBasedRedirect = () => {
   useEffect(() => {
     if (currentUser) {
       switch (currentUser.role) {
-        case 'admin':
-          navigate('/admin');
-          break;
+      
         case 'responsable rh':
           navigate('/hr');
           break;

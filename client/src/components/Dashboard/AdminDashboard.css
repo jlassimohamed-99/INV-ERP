@@ -1,23 +1,32 @@
+body {
+  background-color: #f5f5dc; /* Light beige background */
+  font-family: Arial, sans-serif;
+}
+
 .admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
   text-align: center;
-  padding: 20px;
 }
 
-.admin-dashboard ul {
-  list-style-type: none;
-  padding: 0;
+.button-group {
+  display: flex;
+  gap: 20px;
 }
 
-.admin-dashboard li {
-  margin: 10px 0;
+button {
+  padding: 10px 20px;
+  background-color: #fff;
+  color: #6a4fc6;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
-.admin-dashboard a {
-  text-decoration: none;
-  color: #00a676;
-  font-weight: bold;
-}
-
-.admin-dashboard a:hover {
-  text-decoration: underline;
+button:hover {
+  background-color: #ddd;
 }

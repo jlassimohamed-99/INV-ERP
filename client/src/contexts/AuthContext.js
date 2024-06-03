@@ -46,8 +46,13 @@ export const AuthProvider = ({ children }) => {
   }, [navigateBasedOnRole]);
 
   const register = async (userData) => {
-    const data = await authService.register(userData);
-    setCurrentUser(data.user);
+    try {
+      const data = await authService.register(userData);
+      setCurrentUser(data.user);
+    } catch (error) {
+      console.error('Failed to register:', error);
+      throw error;
+    }
   };
 
   const login = async (userData) => {

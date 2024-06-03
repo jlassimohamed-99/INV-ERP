@@ -1,7 +1,46 @@
-.app-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
+/* App.css */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.side-menu {
+  width: 200px;
+  background-color: #f0f0f0;
+  padding: 10px;
+  height: 100vh;
+  position: fixed;
+}
+
+.side-menu h3 {
+  margin-top: 0;
+}
+
+.side-menu ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.side-menu ul li {
+  margin: 10px 0;
+}
+
+.side-menu ul li button {
+  width: 100%;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.side-menu ul li button:hover {
+  background-color: #e0e0e0;
+}
+
+.content {
+  margin-left: 220px;
+  padding: 20px;
+}

@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UserManagement from '../UserManagement';
+import LeftNav from '../LeftNav/LeftNav';
+import MainSection from '../MainSection/MainSection';
+import TopNav from '../TopNav/TopNav';
+import '../../App.css'; // Assurez-vous que le chemin vers App.css est correct
 
 const HRDashboard = () => {
   const [employees, setEmployees] = useState([]);
+  const [employeeId, setEmployeeId] = useState('');
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -22,15 +27,20 @@ const HRDashboard = () => {
   }, []);
 
   return (
-    <div>
-      <h2>HR Dashboard</h2>
-      <UserManagement />
-      <h3>Employee List</h3>
-      <ul>
-        {employees.map(employee => (
-          <li key={employee._id}>{employee.name} - {employee.role}</li>
-        ))}
-      </ul>
+    <div className="App">
+      <TopNav />
+      <LeftNav employeeId={employeeId} />
+      <MainSection setEmployeeId={setEmployeeId} />
+      <div>
+        <h2>HR Dashboard</h2>
+        <UserManagement />
+        <h3>Employee List</h3>
+        <ul>
+          {employees.map(employee => (
+            <li key={employee._id}>{employee.name} - {employee.role}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

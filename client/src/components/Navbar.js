@@ -9,9 +9,8 @@ const Navbar = () => {
     <nav>
       <ul>
         {currentUser ? (
-          <li>
+
             <button onClick={logout}>Logout</button>
-          </li>
         ) : (
           <>
             <li>

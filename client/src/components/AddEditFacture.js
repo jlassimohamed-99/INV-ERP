@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const AddEditFacture = ({ mode }) => {
+const AddEditFacture = ({ mode,setShowForm }) => {
   const [formData, setFormData] = useState({ amount: '', date: '', description: '' });
   const navigate = useNavigate();
   const { id } = useParams();
@@ -31,7 +31,24 @@ const AddEditFacture = ({ mode }) => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{
+      position:"fixed",
+      top:0,
+      left:0,
+      width:"100%",
+      height:"100vh",
+      display:"flex",
+      justifyContent:"center",
+      alignItems:"center",
+      background:'rgb(136 136 136 / 78%)'
+    }}>
+    <div style={{ padding: '20px' , background:"#ffffff" , position : "relative" }}>
+      <button onClick={()=>setShowForm(false)} style={{
+        position:"absolute",
+        top:'15px',
+        right:'15px',
+        width:"25px"
+      }}>X</button>
       <Typography variant="h4" gutterBottom>{mode === 'edit' ? 'Edit Facture' : 'Add Facture'}</Typography>
       <form onSubmit={handleSubmit}>
         <TextField
@@ -65,6 +82,7 @@ const AddEditFacture = ({ mode }) => {
         />
         <Button type="submit" variant="contained" color="primary">{mode === 'edit' ? 'Save Changes' : 'Add Facture'}</Button>
       </form>
+    </div>
     </div>
   );
 };

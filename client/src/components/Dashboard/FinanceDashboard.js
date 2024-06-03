@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { Card, CardContent, Typography, Button, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ import {
   Legend,
 } from 'chart.js';
 import './FinanceDashboard.css';
+import AddEditFacture from '../AddEditFacture';
 
 ChartJS.register(
   CategoryScale,
@@ -30,6 +31,7 @@ ChartJS.register(
 
 const FinanceDashboard = () => {
   const navigate = useNavigate();
+  const [showForm,setShowForm]=useState(false)
 
   const handleDelete = (id) => {
     // Implement the delete logic here
@@ -81,7 +83,7 @@ const FinanceDashboard = () => {
           <CardContent>
             <Typography variant="h5" component="h2">Facturation</Typography>
             <Bar data={facturationData} />
-            <Button variant="contained" onClick={() => navigate('/add-facture')}>Add Facture</Button>
+            <Button variant="contained" onClick={() => setShowForm(true)}>Add Facture</Button>
             <IconButton onClick={() => navigate(`/edit-facture/1`)}><EditIcon /></IconButton>
             <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
           </CardContent>
@@ -106,6 +108,9 @@ const FinanceDashboard = () => {
             <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
           </CardContent>
         </Card>
+        {
+          showForm && <AddEditFacture mode="add" setShowForm={setShowForm} />
+        }
       </div>
     </div>
   );

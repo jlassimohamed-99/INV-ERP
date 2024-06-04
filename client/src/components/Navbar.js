@@ -1,12 +1,12 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
 
 const Navbar = () => {
-  const { currentUser, logout } = useAuth();
+  const { logout } = useAuth();
 
   return (
     <nav>
+<<<<<<< Updated upstream
       <ul>
         {currentUser ? (
 
@@ -22,6 +22,9 @@ const Navbar = () => {
           </>
         )}
       </ul>
+=======
+          <button onClick={logout}>Logout</button>
+>>>>>>> Stashed changes
     </nav>
   );
 };

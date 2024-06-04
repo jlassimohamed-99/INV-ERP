@@ -1,187 +1,172 @@
-/* General styles */
-body {
-  background-color: #0fa6dd; /* Light beige background */
-  font-family: Arial, sans-serif;
+/* Reset some basic elements to remove margin and padding */
+body, html, div, ul, li, button {
   margin: 0;
-  height: 100vh; /* Ensures the body takes the full height of the viewport */
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
-/* Utility classes */
-.centered-container {
+body {
+  background-color: #f8f9fa;
+}
+
+.App {
   display: flex;
-  justify-content: center;
-  align-items: center;
   height: 100vh;
 }
 
-/* Auth Forms */
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Ensures the container takes the full height of the viewport */
-}
-
-.auth-form {
-  background-color: #6a4fc6; /* Purple background */
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 100%;
-  max-width: 400px;
-  color: white;
-}
-
-.auth-form h2 {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.input-icon {
-  position: relative;
-}
-
-.input-icon input {
-  width: 100%;
-  padding: 10px 40px 10px 10px;
-  border: none;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-.input-icon i {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #ccc;
-}
-
-.form-options {
+.top-nav, .hr-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-}
-
-.form-options label {
-  display: flex;
-  align-items: center;
-}
-
-.form-options a {
-  color: #ccc;
-  text-decoration: none;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #fff;
-  color: #6a4fc6;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: #ddd;
-}
-
-.auth-form p {
-  margin-top: 15px;
-  color: #ccc;
-}
-
-.auth-form p a {
-  color: #fff;
-  text-decoration: none;
-}
-
-/* Dashboard Styles */
-.dashboard {
-  padding: 20px;
-}
-
-.chart-container {
-  display: flex;
-  justify-content: space-around;
-}
-
-.chart {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  text-align: center;
-  width: 300px;
-}
-
-.chart h2 {
-  margin-bottom: 20px;
-}
-
-.chart button {
-  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
   padding: 10px 20px;
-  background-color: #007bff;
+}
+
+.leftNav {
+  width: 250px;
+  background-color: #343a40;
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.chart button:hover {
-  background-color: #0056b3;
-}
-
-/* Form Styles */
-.form-container {
   padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  margin: 0 auto;
 }
 
-.form-container h1 {
-  text-align: center;
-  margin-bottom: 20px;
+.leftNav .employeeDetail img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
 }
 
-.form-container label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
+.leftNav .employeeDetail h1 {
+  font-size: 18px;
+  margin: 10px 0;
 }
 
-.form-container input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-sizing: border-box;
+.leftNav .employeeDetail p {
+  margin: 5px 0;
 }
 
-.form-container button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
+.leftNav .sidebar-menu {
+  list-style: none;
+}
+
+.leftNav .sidebar-menu li {
+  margin: 20px 0;
+}
+
+.leftNav .sidebar-menu li button {
+  background: none;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  color: white;
   font-size: 16px;
+  cursor: pointer;
 }
 
-.form-container button:hover {
-  background-color: #0056b3;
+.admin-dashboard-container {
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  background-color: #343a40;
+  color: white;
+  width: 250px;
+  padding: 10px;
+  position: relative;
+  transition: width 0.3s;
+}
+
+.sidebar.open {
+  width: 60px;
+}
+
+.sidebar.closed {
+  width: 250px;
+}
+
+.toggle-sidebar-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.sidebar-menu {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 50px;
+}
+
+.sidebar-menu li {
+  margin: 20px 0;
+}
+
+.sidebar-menu li button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+  padding: 10px;
+  width: 100%;
+}
+
+.sidebar-menu li button:hover {
+  background-color: #495057;
+}
+
+.admin-dashboard-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.hr-dashboard {
+  width: 100%;
+}
+
+.hr-header h2 {
+  margin: 0;
+}
+
+.hr-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.hr-main .add-employee-btn {
+  align-self: flex-start;
+  background-color: green;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  margin: 20px 0;
+}
+
+.hr-main .employee-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hr-main .employee-list li {
+  list-style: none;
+  padding: 20px;
+  background-color: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  width: 200px;
+  text-align: center;
+}
+
+.hr-main .employee-list li:hover {
+  background-color: #f0f0f0;
 }

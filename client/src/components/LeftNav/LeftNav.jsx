@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import './LeftNav.css';
-import { axiosGet } from '../../axiosServices';
 
 const LeftNav = ({ selectedEmployee }) => {
   const [employee, setEmployee] = useState(null);

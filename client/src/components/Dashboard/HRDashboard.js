@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-<<<<<<< Updated upstream
-import UserManagement from '../UserManagement';
-
-const HRDashboard = () => {
-  const [employees, setEmployees] = useState([]);
-=======
 import LeftNav from '../LeftNav/LeftNav';
 import UserManagement from '../UserManagement';
 import LogoutButton from '../LogoutButton';
@@ -19,7 +13,6 @@ const HRDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isFormShown , setIsFormShown ] = useState(false);
   const navigate = useNavigate();
->>>>>>> Stashed changes
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -46,17 +39,6 @@ const HRDashboard = () => {
   };
 
   return (
-<<<<<<< Updated upstream
-    <div>
-      <h2>HR Dashboard</h2>
-      <UserManagement />
-      <h3>Employee List</h3>
-      <ul>
-        {employees.map(employee => (
-          <li key={employee._id}>{employee.name} - {employee.role}</li>
-        ))}
-      </ul>
-=======
     <div className="hr-dashboard">
       <div className="top-bar">
         </div>
@@ -107,7 +89,6 @@ const HRDashboard = () => {
         </div>
       </div>
      {isFormShown && <AddEmployeeForm setIsFormShown={setIsFormShown} onEmployeeAdded={()=>{}}/>}
->>>>>>> Stashed changes
     </div>
   );
 };

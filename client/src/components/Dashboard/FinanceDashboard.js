@@ -1,119 +1,105 @@
-import React, { useState } from 'react';
-import { Bar, Line } from 'react-chartjs-2';
-import { Card, CardContent, Typography, Button, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import './FinanceDashboard.css';
-import AddEditFacture from '../AddEditFacture';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import LeftNav from '../LeftNav/LeftNav';
+import './HRDashboard.css';
+import AddEmployeeForm from '../AddEmployeeForm';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const HRDashboard = () => {
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isFormShown, setIsFormShown] = useState(false);
 
-const FinanceDashboard = () => {
-  const navigate = useNavigate();
-  const [showForm,setShowForm]=useState(false)
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/users/', {
+          headers: {
+            'x-auth-token': localStorage.getItem('token'),
+          },
+        });
+        setEmployees(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchEmployees();
+  }, []);
 
-  const handleDelete = (id) => {
-    // Implement the delete logic here
-    console.log(`Delete item with id: ${id}`);
+  const handleEmployeeClick = (employee) => {
+    setSelectedEmployee(employee);
   };
 
-  const facturationData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-    datasets: [
-      {
-        label: 'Facturation',
-        backgroundColor: 'rgba(75,192,192,1)',
-        borderColor: 'rgba(75,192,192,1)',
-        data: [65, 59, 80, 81, 56, 55]
-      }
-    ]
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const depensesData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-    datasets: [
-      {
-        label: 'Dépenses',
-        backgroundColor: 'rgba(255,99,132,1)',
-        borderColor: 'rgba(255,99,132,1)',
-        data: [35, 45, 60, 70, 46, 33]
-      }
-    ]
-  };
-
-  const devisData = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-    datasets: [
-      {
-        label: 'Devis',
-        backgroundColor: 'rgba(153,102,255,1)',
-        borderColor: 'rgba(153,102,255,1)',
-        data: [20, 30, 50, 40, 70, 60]
-      }
-    ]
+  const handleEmployeeAdded = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/users/', {
+        headers: {
+          'x-auth-token': localStorage.getItem('token'),
+        },
+      });
+      setEmployees(response.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <div className="finance-dashboard">
-      <Typography variant="h4" gutterBottom>Finance Dashboard</Typography>
-      
-      <div className="card-container">
-        <Card className="card">
-          <CardContent>
-            <Typography variant="h5" component="h2">Facturation</Typography>
-            <Bar data={facturationData} />
-            <Button variant="contained" onClick={() => setShowForm(true)}>Add Facture</Button>
-            <IconButton onClick={() => navigate(`/edit-facture/1`)}><EditIcon /></IconButton>
-            <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
-          </CardContent>
-        </Card>
-
-        <Card className="card">
-          <CardContent>
-            <Typography variant="h5" component="h2">Gestion des Dépenses</Typography>
-            <Line data={depensesData} />
-            <Button variant="contained" onClick={() => navigate('/add-depense')}>Add Depense</Button>
-            <IconButton onClick={() => navigate(`/edit-depense/1`)}><EditIcon /></IconButton>
-            <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
-          </CardContent>
-        </Card>
-
-        <Card className="card">
-          <CardContent>
-            <Typography variant="h5" component="h2">Gestion des Devis</Typography>
-            <Line data={devisData} />
-            <Button variant="contained" onClick={() => navigate('/add-devis')}>Add Devis</Button>
-            <IconButton onClick={() => navigate(`/edit-devis/1`)}><EditIcon /></IconButton>
-            <IconButton onClick={() => handleDelete(1)}><DeleteIcon /></IconButton>
-          </CardContent>
-        </Card>
-        {
-          showForm && <AddEditFacture mode="add" setShowForm={setShowForm} />
-        }
+    <div className="hr-dashboard">
+      <div className="top-bar"></div>
+      <div className="main-content">
+        <div className="side-content">
+          <button onClick={toggleSidebar} className="toggle-sidebar-btn">
+            ☰
+          </button>
+          {isSidebarOpen && <LeftNav selectedEmployee={selectedEmployee} />}
+        </div>
+        <div className="content">
+          <div className="header">
+            <h2 style={{ textAlign: 'center' }}>HR Dashboard</h2>
+          </div>
+          <div className="employee-management">
+            <h3>Employee List</h3>
+            <input
+              type="text"
+              placeholder="Search by name, email, designation etc."
+              className="search-bar"
+            />
+            <button className="add-employee-button" onClick={() => setIsFormShown(true)}>
+              + Add Employee
+            </button>
+            <div className="employee-cards">
+              {employees.map((employee) => (
+                <div
+                  key={employee._id}
+                  className="employee-card"
+                  onClick={() => handleEmployeeClick(employee)}
+                >
+                  <img
+                    src={employee.profilePicture || 'https://i.ytimg.com/vi/SSi4DmUAjBM/maxresdefault.jpg'}
+                    alt={employee.name}
+                  />
+                  <div className="employee-details">
+                    <h4>{employee.name}</h4>
+                    <p>{employee.role}</p>
+                    <footer>
+                      <p>{employee.email}</p>
+                    </footer>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+      {isFormShown && (
+        <AddEmployeeForm setIsFormShown={setIsFormShown} onEmployeeAdded={handleEmployeeAdded} />
+      )}
     </div>
   );
 };
 
-export default FinanceDashboard;
+export default HRDashboard;

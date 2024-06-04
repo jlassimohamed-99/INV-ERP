@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from '../Navbar';
 import HRDashboard from '../Dashboard/HRDashboard';
 import FinanceDashboard from '../Dashboard/FinanceDashboard';
 import ProjectDashboard from '../Dashboard/ProjectDashboard';
@@ -25,7 +24,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      {/* <Navbar /> */}
       <div className="admin-dashboard-container">
         <div className={`sidebar `} style={{
           width: isSidebarOpen ? '250px' : '0px',

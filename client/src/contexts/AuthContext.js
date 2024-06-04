@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
+import axios from 'axios'; // Add this import
 
 const AuthContext = createContext();
 
@@ -35,14 +36,21 @@ export const AuthProvider = ({ children }) => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const user = await authService.getCurrentUser();
-      setCurrentUser(user);
-      if (user) {
-        navigateBasedOnRole(user.role);
-      }
-    };
-    fetchCurrentUser();
+    const token = localStorage.getItem('token');
+    if (token) {
+      const fetchCurrentUser = async () => {
+        try {
+          const user = await authService.getCurrentUser();
+          setCurrentUser(user);
+          if (user) {
+            navigateBasedOnRole(user.role);
+          }
+        } catch (error) {
+          console.error('Failed to fetch current user:', error);
+        }
+      };
+      fetchCurrentUser();
+    }
   }, [navigateBasedOnRole]);
 
   const register = async (userData) => {
@@ -51,6 +59,24 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(data.user);
     } catch (error) {
       console.error('Failed to register:', error);
+      throw error;
+    }
+  };
+
+  const updateEmployee = async (userId, updatedData) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/api/users/${userId}`, updatedData, {
+        headers: {
+          'x-auth-token': localStorage.getItem('token'),
+        },
+      });
+      const updatedUser = response.data;
+      if (updatedUser._id === currentUser._id) {
+        setCurrentUser(updatedUser);
+      }
+      return updatedUser;
+    } catch (error) {
+      console.error('Failed to update employee:', error);
       throw error;
     }
   };
@@ -69,7 +95,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, register, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, register, updateEmployee, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

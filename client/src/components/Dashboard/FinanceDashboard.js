@@ -1,105 +1,203 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import LeftNav from '../LeftNav/LeftNav';
-import './HRDashboard.css';
-import AddEmployeeForm from '../AddEmployeeForm';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+  RadialLinearScale,
+} from 'chart.js';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import './FinanceDashboard.css';
 
-const HRDashboard = () => {
-  const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+  RadialLinearScale
+);
+
+const FinanceDashboard = () => {
+  const [payments, setPayments] = useState([]);
+  const [selectedPayment, setSelectedPayment] = useState(null);
   const [isFormShown, setIsFormShown] = useState(false);
+  const [formData, setFormData] = useState({ type: '', amount: '', description: '' });
 
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/users/', {
-          headers: {
-            'x-auth-token': localStorage.getItem('token'),
-          },
-        });
-        setEmployees(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchEmployees();
+    fetchPayments();
   }, []);
 
-  const handleEmployeeClick = (employee) => {
-    setSelectedEmployee(employee);
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const handleEmployeeAdded = async () => {
+  const fetchPayments = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/users/', {
-        headers: {
-          'x-auth-token': localStorage.getItem('token'),
-        },
+      const response = await axios.get('http://localhost:5000/api/payments', {
+        headers: { token: localStorage.getItem('token') },
       });
-      setEmployees(response.data);
+      const activePayments = response.data.filter(payment => !payment.isDeleted);
+      setPayments(activePayments);
     } catch (err) {
       console.error(err);
     }
   };
 
+  const handleAddPayment = () => {
+    setSelectedPayment(null);
+    setIsFormShown(true);
+    setFormData({ type: '', amount: '', description: '' });
+  };
+
+  const handleEditPayment = (payment) => {
+    setSelectedPayment(payment);
+    setIsFormShown(true);
+    setFormData(payment);
+  };
+
+  const handleDeletePayment = async (paymentId) => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/payments/${paymentId}`, {
+        headers: { token: localStorage.getItem('token') },
+      });
+      console.log('Delete response:', response);
+      fetchPayments();
+    } catch (err) {
+      console.error('Error deleting payment:', err.response ? err.response.data : err.message);
+    }
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    console.log('Submitting form data:', formData);
+    try {
+      if (selectedPayment) {
+        await axios.put(`http://localhost:5000/api/payments/${selectedPayment._id}`, formData, {
+          headers: { token: localStorage.getItem('token') },
+        });
+      } else {
+        await axios.post('http://localhost:5000/api/payments', formData, {
+          headers: { token: localStorage.getItem('token') },
+        });
+      }
+      fetchPayments();
+      setIsFormShown(false);
+    } catch (err) {
+      console.error('Error submitting form:', err);
+    }
+  };
+
+  // Preprocess data to sum amounts for each type
+  const paymentSums = payments.reduce((acc, payment) => {
+    if (!acc[payment.type]) {
+      acc[payment.type] = 0;
+    }
+    acc[payment.type] += payment.amount;
+    return acc;
+  }, {});
+
+  const types = Object.keys(paymentSums);
+  const amounts = types.map(type => paymentSums[type]);
+
+  // Data for charts
+  const chartData = {
+    labels: types,
+    datasets: [
+      {
+        label: 'Payment Amount',
+        data: amounts,
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+      },
+    ],
+  };
+
   return (
-    <div className="hr-dashboard">
-      <div className="top-bar"></div>
-      <div className="main-content">
-        <div className="side-content">
-          <button onClick={toggleSidebar} className="toggle-sidebar-btn">
-            ☰
-          </button>
-          {isSidebarOpen && <LeftNav selectedEmployee={selectedEmployee} />}
-        </div>
-        <div className="content">
-          <div className="header">
-            <h2 style={{ textAlign: 'center' }}>HR Dashboard</h2>
-          </div>
-          <div className="employee-management">
-            <h3>Employee List</h3>
-            <input
-              type="text"
-              placeholder="Search by name, email, designation etc."
-              className="search-bar"
-            />
-            <button className="add-employee-button" onClick={() => setIsFormShown(true)}>
-              + Add Employee
-            </button>
-            <div className="employee-cards">
-              {employees.map((employee) => (
-                <div
-                  key={employee._id}
-                  className="employee-card"
-                  onClick={() => handleEmployeeClick(employee)}
-                >
-                  <img
-                    src={employee.profilePicture || 'https://i.ytimg.com/vi/SSi4DmUAjBM/maxresdefault.jpg'}
-                    alt={employee.name}
-                  />
-                  <div className="employee-details">
-                    <h4>{employee.name}</h4>
-                    <p>{employee.role}</p>
-                    <footer>
-                      <p>{employee.email}</p>
-                    </footer>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+    <div className="finance-dashboard">
+      <div className="header">
+        <h2>Finance Dashboard</h2>
+        <button onClick={handleAddPayment}>+ Add Payment</button>
       </div>
       {isFormShown && (
-        <AddEmployeeForm setIsFormShown={setIsFormShown} onEmployeeAdded={handleEmployeeAdded} />
+        <div className="form-container">
+          <form onSubmit={handleFormSubmit}>
+            <label>Type</label>
+            <select
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+            >
+              <option value="">Select Type</option>
+              <option value="facturation">Facturation</option>
+              <option value="depense">Depense</option>
+              <option value="devis">Devis</option>
+            </select>
+            <label>Amount</label>
+            <input
+              type="number"
+              value={formData.amount}
+              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              required
+            />
+            <label>Description</label>
+            <input
+              type="text"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              required
+            />
+            <button type="submit">Save</button>
+            <button type="button" onClick={() => setIsFormShown(false)}>Cancel</button>
+          </form>
+        </div>
       )}
+      <div className="charts-container">
+        <div className="chart">
+          <h3>Bar Chart</h3>
+          <Bar data={chartData} />
+        </div>
+        <div className="chart">
+          <h3>Pie Chart</h3>
+          <Pie data={chartData} />
+        </div>
+        <div className="chart">
+          <h3>Line Chart</h3>
+          <Line data={chartData} />
+        </div>
+      </div>
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payments.map((payment) => (
+              <tr key={payment._id}>
+                <td>{payment.type}</td>
+                <td>{payment.amount}</td>
+                <td>{payment.description}</td>
+                <td>
+                  <button onClick={() => handleEditPayment(payment)}>Edit</button>
+                  <button onClick={() => handleDeletePayment(payment._id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default HRDashboard;
+export default FinanceDashboard;

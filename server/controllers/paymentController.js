@@ -1,68 +1,90 @@
 const Payment = require('../models/paymentModel');
+const mongoose = require('mongoose');
 
+// Get all payments
 const getPayments = async (req, res) => {
-    try {
-        const payments = await Payment.find({ isDeleted: false });
-        res.status(200).json(payments);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
+  try {
+    const payments = await Payment.find();
+    res.json(payments);
+  } catch (err) {
+    console.error('Error fetching payments:', err);
+    res.status(500).send('Server error');
+  }
 };
 
+// Get a payment by ID
 const getPayment = async (req, res) => {
-    try {
-        const payment = await Payment.findById(req.params.id);
-        if (!payment) {
-            return res.status(404).json({ message: 'Payment not found' });
-        }
-        res.status(200).json(payment);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+  try {
+    const payment = await Payment.findById(req.params.id);
+    if (!payment) {
+      return res.status(404).json({ msg: 'Payment not found' });
     }
+    res.json(payment);
+  } catch (err) {
+    console.error('Error fetching payment by ID:', err);
+    res.status(500).send('Server error');
+  }
 };
 
+// Create a new payment
 const createPayment = async (req, res) => {
-    const { client, social_reason, date, status, comment, amount } = req.body;
-    try {
-        const newPayment = new Payment({
-            payment_id: new mongoose.Types.ObjectId().toString(),
-            client,
-            social_reason,
-            date,
-            status,
-            comment,
-            amount
-        });
+  const { type, amount, description } = req.body;
 
-        await newPayment.save();
-        res.status(201).json({ message: 'Payment created successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
+  try {
+    const payment_id = new mongoose.Types.ObjectId().toString();
+    const newPayment = new Payment({ payment_id, type, amount, description });
+    const payment = await newPayment.save();
+    res.json(payment);
+  } catch (err) {
+    console.error('Error creating payment:', err);
+    res.status(500).send('Server error');
+  }
 };
 
+// Update a payment
 const updatePayment = async (req, res) => {
-    try {
-        const payment = await Payment.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!payment) {
-            return res.status(404).json({ message: 'Payment not found' });
-        }
-        res.status(200).json(payment);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+  const { type, amount, description } = req.body;
+
+  try {
+    let payment = await Payment.findById(req.params.id);
+
+    if (!payment) {
+      return res.status(404).json({ msg: 'Payment not found' });
     }
+
+    payment.type = type;
+    payment.amount = amount;
+    payment.description = description;
+
+    await payment.save();
+    res.json(payment);
+  } catch (err) {
+    console.error('Error updating payment:', err);
+    res.status(500).send('Server error');
+  }
 };
 
 const deletePayment = async (req, res) => {
-    try {
-        const payment = await Payment.findByIdAndUpdate(req.params.id, { isDeleted: true }, { new: true });
-        if (!payment) {
-            return res.status(404).json({ message: 'Payment not found' });
-        }
-        res.status(200).json({ message: 'Payment deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+  try {
+    const payment = await Payment.findById(req.params.id);
+
+    if (!payment) {
+      return res.status(404).json({ msg: 'Payment not found' });
     }
+
+    payment.isDeleted = true;
+    await payment.save();
+    res.json({ msg: 'Payment marked as deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
 };
 
-module.exports = { getPayments, getPayment, createPayment, updatePayment, deletePayment };
+module.exports = {
+  getPayments,
+  getPayment,
+  createPayment,
+  updatePayment,
+  deletePayment,
+};

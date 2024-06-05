@@ -44,7 +44,7 @@ body {
   overflow: hidden;
   position: relative;
   z-index: 1;
-  width: 300px; /* Sidebar width */
+  width: 300px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -104,6 +104,8 @@ body {
   background: #ecf0f1;
   border-radius: 10px;
   padding: 20px;
+  height: 100%;
+  overflow-y: auto; /* Add vertical scroll */
 }
 
 .employee-management h3 {
@@ -137,7 +139,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .employee-card {
@@ -212,7 +214,7 @@ body {
   text-align: center;
   margin: 20px 0;
   font-size: 20px;
-  width: 100%; /* Make Full Detail same width as sidebar */
+  width: 100%;
 }
 
 .full-detail img {

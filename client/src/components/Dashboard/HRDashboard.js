@@ -16,7 +16,7 @@ const HRDashboard = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/users/', {
           headers: {
-            'x-auth-token': localStorage.getItem('token'),
+            'token': localStorage.getItem('token'),
           },
         });
         setEmployees(response.data);
@@ -40,7 +40,7 @@ const HRDashboard = () => {
       try {
         await axios.delete(`http://localhost:5000/api/users/${selectedEmployee._id}`, {
           headers: {
-            'x-auth-token': localStorage.getItem('token'),
+            'token': localStorage.getItem('token'),
           },
         });
         setEmployees(employees.filter(emp => emp._id !== selectedEmployee._id));

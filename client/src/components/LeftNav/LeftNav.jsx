@@ -12,7 +12,7 @@ const LeftNav = ({ selectedEmployee }) => {
 
   return (
     <nav className='leftNav'>
-      <div className="employeeDetail">
+      <div className="employeeDetail full-detail">
         <h2>Full Detail</h2>
         {employee ? (
           <>

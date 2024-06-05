@@ -64,37 +64,32 @@ const HRDashboard = () => {
 
   return (
     <div className="hr-dashboard">
+      <div className="top-bar">
+        <h2>HR Dashboard</h2>
+        <button onClick={toggleSidebar} className="toggle-sidebar-btn">
+          ☰
+        </button>
+      </div>
       <div className="main-content">
-        <div className="side-content">
-          <div className="top-bar">
-            <button onClick={toggleSidebar} className="toggle-sidebar-btn">
-              ☰
-            </button>
-          </div>
+        <div className={`side-content ${isSidebarOpen ? 'open' : 'closed'}`}>
           {isSidebarOpen && (
-            <LeftNav selectedEmployee={selectedEmployee} />
+            <>
+              <LeftNav selectedEmployee={selectedEmployee} />
+              <div className="sidebar-buttons">
+                <button onClick={handleAddEmployee}>+ Add Employee</button>
+                {selectedEmployee && (
+                  <>
+                    <button onClick={handleEditEmployee}>Modify</button>
+                    <button onClick={handleDeleteEmployee}>Delete</button>
+                  </>
+                )}
+              </div>
+            </>
           )}
-          <div className="sidebar-buttons">
-            <button onClick={handleAddEmployee}>+ Add Employee</button>
-            {selectedEmployee && (
-              <>
-                <button onClick={handleEditEmployee}>Modify</button>
-                <button onClick={handleDeleteEmployee}>Delete</button>
-              </>
-            )}
-          </div>
         </div>
         <div className="content">
-          <div className="header">
-            <h2 style={{ textAlign: 'center' }}>HR Dashboard</h2>
-          </div>
           <div className="employee-management">
             <h3>Employee List</h3>
-            <input
-              type="text"
-              placeholder="Search by name, email, designation etc."
-              className="search-bar"
-            />
             <div className="employee-cards">
               {employees.map((employee) => (
                 <div

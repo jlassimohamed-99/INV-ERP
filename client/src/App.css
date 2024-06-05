@@ -25,7 +25,7 @@ body {
 }
 
 .leftNav {
-  width: 250px;
+  width: 260px;
   background-color: #343a40;
   color: white;
   padding: 20px;
@@ -91,7 +91,7 @@ body {
   font-size: 24px;
   cursor: pointer;
   position: absolute;
-  top: 10px;
+  top: 1px;
   right: 10px;
 }
 

@@ -1,0 +1,73 @@
+.project-dashboard {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  margin: 0;
+}
+
+.header button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.form-container {
+  margin: 20px 0;
+}
+
+.form-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container form label {
+  margin-bottom: 5px;
+}
+
+.form-container form input {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.form-container form button {
+  padding: 10px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container table th,
+.table-container table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.table-container table th {
+  background-color: #f4f4f4;
+}
+
+.table-container table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.table-container table tbody tr td button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  font-size: 14px;
+}

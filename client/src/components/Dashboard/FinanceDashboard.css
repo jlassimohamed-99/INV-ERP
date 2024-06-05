@@ -120,3 +120,15 @@
 .table-container table tbody tr td button:hover {
   background-color: #0056b3;
 }
+.finance-dashboard .logout-button {
+  margin-left: auto;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.finance-dashboard .logout-button:hover {
+  background-color: #d32f2f;
+}

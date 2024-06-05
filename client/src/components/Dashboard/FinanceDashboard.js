@@ -14,6 +14,7 @@ import {
   RadialLinearScale,
 } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './FinanceDashboard.css';
 
 ChartJS.register(
@@ -30,57 +31,59 @@ ChartJS.register(
 );
 
 const FinanceDashboard = () => {
-  const [payments, setPayments] = useState([]);
-  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [paiements, setPaiements] = useState([]);
+  const [selectedPaiement, setSelectedPaiement] = useState(null);
   const [isFormShown, setIsFormShown] = useState(false);
   const [formData, setFormData] = useState({ type: '', amount: '', description: '' });
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    fetchPayments();
+    fetchPaiements();
   }, []);
 
-  const fetchPayments = async () => {
+  const fetchPaiements = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/payments', {
         headers: { token: localStorage.getItem('token') },
       });
-      const activePayments = response.data.filter(payment => !payment.isDeleted);
-      setPayments(activePayments);
+      const activePaiements = response.data.filter(payment => !payment.isDeleted);
+      setPaiements(activePaiements);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleAddPayment = () => {
-    setSelectedPayment(null);
+  const handleAddPaiement = () => {
+    setSelectedPaiement(null);
     setIsFormShown(true);
     setFormData({ type: '', amount: '', description: '' });
   };
 
-  const handleEditPayment = (payment) => {
-    setSelectedPayment(payment);
+  const handleEditPaiement = (paiement) => {
+    setSelectedPaiement(paiement);
     setIsFormShown(true);
-    setFormData(payment);
+    setFormData(paiement);
   };
 
-  const handleDeletePayment = async (paymentId) => {
+  const handleDeletePaiement = async (paiementId) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/payments/${paymentId}`, {
+      const response = await axios.delete(`http://localhost:5000/api/payments/${paiementId}`, {
         headers: { token: localStorage.getItem('token') },
       });
       console.log('Delete response:', response);
-      fetchPayments();
+      fetchPaiements();
     } catch (err) {
-      console.error('Error deleting payment:', err.response ? err.response.data : err.message);
+      console.error('Erreur lors de la suppression du paiement:', err.response ? err.response.data : err.message);
     }
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting form data:', formData);
+    console.log('Envoi des données du formulaire:', formData);
     try {
-      if (selectedPayment) {
-        await axios.put(`http://localhost:5000/api/payments/${selectedPayment._id}`, formData, {
+      if (selectedPaiement) {
+        await axios.put(`http://localhost:5000/api/payments/${selectedPaiement._id}`, formData, {
           headers: { token: localStorage.getItem('token') },
         });
       } else {
@@ -88,42 +91,50 @@ const FinanceDashboard = () => {
           headers: { token: localStorage.getItem('token') },
         });
       }
-      fetchPayments();
+      fetchPaiements();
       setIsFormShown(false);
     } catch (err) {
-      console.error('Error submitting form:', err);
+      console.error('Erreur lors de l\'envoi du formulaire:', err);
     }
   };
 
   // Preprocess data to sum amounts for each type
-  const paymentSums = payments.reduce((acc, payment) => {
-    if (!acc[payment.type]) {
-      acc[payment.type] = 0;
+  const paiementSums = paiements.reduce((acc, paiement) => {
+    if (!acc[paiement.type]) {
+      acc[paiement.type] = 0;
     }
-    acc[payment.type] += payment.amount;
+    acc[paiement.type] += paiement.amount;
     return acc;
   }, {});
 
-  const types = Object.keys(paymentSums);
-  const amounts = types.map(type => paymentSums[type]);
+  const types = Object.keys(paiementSums);
+  const amounts = types.map(type => paiementSums[type]);
 
   // Data for charts
   const chartData = {
     labels: types,
     datasets: [
       {
-        label: 'Payment Amount',
+        label: 'Montant du Paiement',
         data: amounts,
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
       },
     ],
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="finance-dashboard">
       <div className="header">
-        <h2>Finance Dashboard</h2>
-        <button onClick={handleAddPayment}>+ Add Payment</button>
+        <h2>Tableau de Bord Financier</h2>
+        <button onClick={handleAddPaiement}>+ Ajouter un Paiement</button>
+        {location.pathname === '/finance' && (
+          <button onClick={handleLogout} className="logout-button">Se Déconnecter</button>
+        )}
       </div>
       {isFormShown && (
         <div className="form-container">
@@ -133,12 +144,12 @@ const FinanceDashboard = () => {
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
             >
-              <option value="">Select Type</option>
+              <option value="">Sélectionner le Type</option>
               <option value="facturation">Facturation</option>
-              <option value="depense">Depense</option>
+              <option value="depense">Dépense</option>
               <option value="devis">Devis</option>
             </select>
-            <label>Amount</label>
+            <label>Montant</label>
             <input
               type="number"
               value={formData.amount}
@@ -152,22 +163,22 @@ const FinanceDashboard = () => {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               required
             />
-            <button type="submit">Save</button>
-            <button type="button" onClick={() => setIsFormShown(false)}>Cancel</button>
+            <button type="submit">Enregistrer</button>
+            <button type="button" onClick={() => setIsFormShown(false)}>Annuler</button>
           </form>
         </div>
       )}
       <div className="charts-container">
         <div className="chart">
-          <h3>Bar Chart</h3>
+          <h3>Diagramme à Barres</h3>
           <Bar data={chartData} />
         </div>
         <div className="chart">
-          <h3>Pie Chart</h3>
+          <h3>Diagramme Circulaire</h3>
           <Pie data={chartData} />
         </div>
         <div className="chart">
-          <h3>Line Chart</h3>
+          <h3>Diagramme en Lignes</h3>
           <Line data={chartData} />
         </div>
       </div>
@@ -176,20 +187,20 @@ const FinanceDashboard = () => {
           <thead>
             <tr>
               <th>Type</th>
-              <th>Amount</th>
+              <th>Montant</th>
               <th>Description</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {payments.map((payment) => (
-              <tr key={payment._id}>
-                <td>{payment.type}</td>
-                <td>{payment.amount}</td>
-                <td>{payment.description}</td>
+            {paiements.map((paiement) => (
+              <tr key={paiement._id}>
+                <td>{paiement.type}</td>
+                <td>{paiement.amount}</td>
+                <td>{paiement.description}</td>
                 <td>
-                  <button onClick={() => handleEditPayment(payment)}>Edit</button>
-                  <button onClick={() => handleDeletePayment(payment._id)}>Delete</button>
+                  <button onClick={() => handleEditPaiement(paiement)}>Modifier</button>
+                  <button onClick={() => handleDeletePaiement(paiement._id)}>Supprimer</button>
                 </td>
               </tr>
             ))}

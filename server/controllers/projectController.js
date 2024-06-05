@@ -1,90 +1,77 @@
-const Project = require('../models/Project');
+const Project = require('../models/ProjectModel');
+const Task = require('../models/taskModel');
 
 // Get all projects
-exports.getAllProjects = async (req, res) => {
+const getProjects = async (req, res) => {
   try {
     const projects = await Project.find();
     res.json(projects);
   } catch (err) {
-    res.status(500).send('Server Error');
-  }
-};
-
-// Get a project by ID
-exports.getProjectById = async (req, res) => {
-  try {
-    const project = await Project.findById(req.params.id);
-    if (!project) {
-      return res.status(404).json({ msg: 'Project not found' });
-    }
-    res.json(project);
-  } catch (err) {
-    res.status(500).send('Server Error');
+    console.error('Error fetching projects:', err);
+    res.status(500).send('Server error');
   }
 };
 
 // Create a new project
-exports.createProject = async (req, res) => {
+const createProject = async (req, res) => {
   const { name, description, createdBy, startDate, endDate, status } = req.body;
 
   try {
-    const newProject = new Project({
-      name,
-      description,
-      createdBy,
-      startDate,
-      endDate,
-      status
-    });
-
+    const newProject = new Project({ name, description, createdBy, startDate, endDate, status });
     const project = await newProject.save();
     res.json(project);
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.error('Error creating project:', err);
+    res.status(500).send('Server error');
   }
 };
 
 // Update a project
-exports.updateProject = async (req, res) => {
-  const { name, description, createdBy, startDate, endDate, status } = req.body;
-
-  // Build project object
-  const projectFields = {};
-  if (name) projectFields.name = name;
-  if (description) projectFields.description = description;
-  if (createdBy) projectFields.createdBy = createdBy;
-  if (startDate) projectFields.startDate = startDate;
-  if (endDate) projectFields.endDate = endDate;
-  if (status) projectFields.status = status;
+const updateProject = async (req, res) => {
+  const { name, description, startDate, endDate, status } = req.body;
 
   try {
     let project = await Project.findById(req.params.id);
 
-    if (!project) return res.status(404).json({ msg: 'Project not found' });
+    if (!project) {
+      return res.status(404).json({ msg: 'Project not found' });
+    }
 
-    project = await Project.findByIdAndUpdate(
-      req.params.id,
-      { $set: projectFields },
-      { new: true }
-    );
+    project.name = name;
+    project.description = description;
+    project.startDate = startDate;
+    project.endDate = endDate;
+    project.status = status;
 
+    await project.save();
     res.json(project);
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.error('Error updating project:', err);
+    res.status(500).send('Server error');
   }
 };
 
-// Delete a project
-exports.deleteProject = async (req, res) => {
+// Delete (soft delete) a project
+const deleteProject = async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id);
+    let project = await Project.findById(req.params.id);
 
-    if (!project) return res.status(404).json({ msg: 'Project not found' });
+    if (!project) {
+      return res.status(404).json({ msg: 'Project not found' });
+    }
 
-    await Project.findByIdAndRemove(req.params.id);
-
-    res.json({ msg: 'Project removed' });
+    project.isDeleted = true;
+    await project.save();
+    res.json({ msg: 'Project soft deleted' });
   } catch (err) {
-    res.status(500).send('Server Error');
+    console.error('Error deleting project:', err);
+    res.status(500).send('Server error');
   }
+};
+
+module.exports = {
+  getProjects,
+  createProject,
+  updateProject,
+  deleteProject,
 };

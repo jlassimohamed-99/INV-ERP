@@ -8,6 +8,7 @@ const ProjectSchema = new Schema({
   startDate: { type: Date },
   endDate: { type: Date },
   status: { type: String, required: true },
+  isDeleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

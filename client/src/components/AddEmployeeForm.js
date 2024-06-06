@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthContext';
 import './AddEmployeeForm.css';
 
 function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEditMode, selectedEmployee }) {
-  const [user_id, setUserId] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,13 +12,11 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
 
   useEffect(() => {
     if (isEditMode && selectedEmployee) {
-      setUserId(selectedEmployee.user_id);
       setName(selectedEmployee.name);
       setEmail(selectedEmployee.email);
       setRole(selectedEmployee.role);
       setPhone(selectedEmployee.phone);
     } else {
-      setUserId('');
       setName('');
       setEmail('');
       setPassword('');
@@ -32,10 +29,10 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
     e.preventDefault();
     try {
       if (isEditMode) {
-        await updateEmployee(selectedEmployee._id, { user_id, name, email, role, phone });
+        await updateEmployee(selectedEmployee._id, { name, email, role, phone });
         setIsEditMode(false);
       } else {
-        await register({ user_id, name, email, password, role, phone });
+        await register({ name, email, password, role, phone });
       }
       onEmployeeAdded();
       setIsFormShown(false);
@@ -49,15 +46,6 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
       <div className="register-form">
         <h2>{isEditMode ? 'Edit Employee' : 'Add Employee'}</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>User ID</label>
-            <input
-              type="text"
-              value={user_id}
-              onChange={(e) => setUserId(e.target.value)}
-              required
-            />
-          </div>
           <div className="form-group">
             <label>Name</label>
             <input

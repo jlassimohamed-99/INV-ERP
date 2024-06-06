@@ -7,7 +7,7 @@ const jwtSecret = process.env.JWT_SECRET;
 
 // Register user
 const register = async (req, res) => {
-  const { user_id, name, email, password, role, phone } = req.body;
+  const { name, email, password, role, phone } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -17,7 +17,6 @@ const register = async (req, res) => {
     }
 
     user = new User({
-      user_id,
       name,
       email,
       password,

@@ -1,10 +1,9 @@
 const Project = require('../models/ProjectModel');
-const Task = require('../models/taskModel');
 
 // Get all projects
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find();
+    const projects = await Project.find({ isDeleted: false });
     res.json(projects);
   } catch (err) {
     console.error('Error fetching projects:', err);
@@ -14,10 +13,10 @@ const getProjects = async (req, res) => {
 
 // Create a new project
 const createProject = async (req, res) => {
-  const { name, description, createdBy, startDate, endDate, status } = req.body;
+  const { name, description, startDate, endDate, status } = req.body;
 
   try {
-    const newProject = new Project({ name, description, createdBy, startDate, endDate, status });
+    const newProject = new Project({ name, description, startDate, endDate, status });
     const project = await newProject.save();
     res.json(project);
   } catch (err) {
@@ -51,7 +50,7 @@ const updateProject = async (req, res) => {
   }
 };
 
-// Delete (soft delete) a project
+// Soft delete a project
 const deleteProject = async (req, res) => {
   try {
     let project = await Project.findById(req.params.id);

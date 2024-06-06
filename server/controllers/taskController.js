@@ -1,21 +1,36 @@
+const mongoose = require('mongoose');
 const Task = require('../models/taskModel');
 
 // Get tasks for a project
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ projectId: req.params.projectId, isDeleted: false });
+    const projectId = new mongoose.Types.ObjectId(req.params.projectId.trim());
+    console.log(`Fetching tasks for project ID: ${projectId}`);
+    const tasks = await Task.find({ projectId: projectId, isDeleted: false });
     res.json(tasks);
   } catch (err) {
-    console.error('Error fetching tasks:', err);
+    res.status(500).send('Server error');
+  }
+};
+
+// Get all tasks
+const getAllTasks = async (req, res) => {
+  try {
+    console.log('Fetching all tasks');
+    const tasks = await Task.find({ isDeleted: false });
+    console.log(`Found tasks:`, tasks);
+    res.json(tasks);
+  } catch (err) {
+    console.error('Error fetching all tasks:', err);
     res.status(500).send('Server error');
   }
 };
 
 // Create a new task
 const createTask = async (req, res) => {
-  const { taskId, responsible, dueDate, client, note, projectId } = req.body;
+  const { title, description, status, due_date, responsible, client, projectId } = req.body;
   try {
-    const newTask = new Task({ taskId, responsible, dueDate, client, note, projectId });
+    const newTask = new Task({ title, description, status, due_date, responsible, client, projectId });
     const task = await newTask.save();
     res.json(task);
   } catch (err) {
@@ -26,17 +41,18 @@ const createTask = async (req, res) => {
 
 // Update a task
 const updateTask = async (req, res) => {
-  const { responsible, dueDate, client, note, status } = req.body;
+  const { title, description, status, due_date, responsible, client } = req.body;
   try {
     let task = await Task.findById(req.params.id);
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
-    task.responsible = responsible;
-    task.dueDate = dueDate;
-    task.client = client;
-    task.note = note;
+    task.title = title;
+    task.description = description;
     task.status = status;
+    task.due_date = due_date;
+    task.responsible = responsible;
+    task.client = client;
 
     await task.save();
     res.json(task);
@@ -64,6 +80,7 @@ const deleteTask = async (req, res) => {
 
 module.exports = {
   getTasks,
+  getAllTasks,
   createTask,
   updateTask,
   deleteTask

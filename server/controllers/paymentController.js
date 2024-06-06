@@ -1,10 +1,9 @@
 const Payment = require('../models/paymentModel');
-const mongoose = require('mongoose');
 
 // Get all payments
 const getPayments = async (req, res) => {
   try {
-    const payments = await Payment.find();
+    const payments = await Payment.find({ isDeleted: false });
     res.json(payments);
   } catch (err) {
     console.error('Error fetching payments:', err);
@@ -28,11 +27,10 @@ const getPayment = async (req, res) => {
 
 // Create a new payment
 const createPayment = async (req, res) => {
-  const { type, amount, description } = req.body;
+  const { type, amount, date, description } = req.body;
 
   try {
-    const payment_id = new mongoose.Types.ObjectId().toString();
-    const newPayment = new Payment({ payment_id, type, amount, description });
+    const newPayment = new Payment({ type, amount, date, description });
     const payment = await newPayment.save();
     res.json(payment);
   } catch (err) {
@@ -43,7 +41,7 @@ const createPayment = async (req, res) => {
 
 // Update a payment
 const updatePayment = async (req, res) => {
-  const { type, amount, description } = req.body;
+  const { type, amount, date, description } = req.body;
 
   try {
     let payment = await Payment.findById(req.params.id);
@@ -54,6 +52,7 @@ const updatePayment = async (req, res) => {
 
     payment.type = type;
     payment.amount = amount;
+    payment.date = date;
     payment.description = description;
 
     await payment.save();
@@ -64,6 +63,7 @@ const updatePayment = async (req, res) => {
   }
 };
 
+// Soft delete a payment
 const deletePayment = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id);

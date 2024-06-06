@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ProjectDashboard.css';
 
-const ProjectDashboard = () => {
+const ProjectDashboard = ({ onProjectClick }) => {
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [isFormShown, setIsFormShown] = useState(false);
-  const [formData, setFormData] = useState({ name: '', description: '', startDate: '', endDate: '', status: '' });
+  const [formData, setFormData] = useState({ name: '', description: '', startDate: '', endDate: '', status: 'To Do' });
 
   useEffect(() => {
     fetchProjects();
@@ -27,7 +27,7 @@ const ProjectDashboard = () => {
   const handleAddProject = () => {
     setSelectedProjectId(null);
     setIsFormShown(true);
-    setFormData({ name: '', description: '', startDate: '', endDate: '', status: '' });
+    setFormData({ name: '', description: '', startDate: '', endDate: '', status: 'To Do' });
   };
 
   const handleEditProject = (project) => {
@@ -101,12 +101,14 @@ const ProjectDashboard = () => {
               onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
             />
             <label>Statut</label>
-            <input
-              type="text"
+            <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              required
-            />
+            >
+              <option value="To Do">To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Done">Done</option>
+            </select>
             <button type="submit">Enregistrer</button>
             <button type="button" onClick={() => setIsFormShown(false)}>Annuler</button>
           </form>
@@ -126,7 +128,7 @@ const ProjectDashboard = () => {
           </thead>
           <tbody>
             {projects.map((project) => (
-              <tr key={project._id}>
+              <tr key={project._id} onClick={() => onProjectClick(project._id)}>
                 <td>{project.name}</td>
                 <td>{project.description}</td>
                 <td>{new Date(project.startDate).toLocaleDateString()}</td>

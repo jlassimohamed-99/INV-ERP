@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
-const PaymentSchema = new mongoose.Schema({
-  payment_id: {
+const paymentSchema = new mongoose.Schema({
+  _id: {
     type: String,
-    unique: true,
-    default: function () {
-      return new mongoose.Types.ObjectId().toString();
-    },
+    default: uuidv4,
   },
   type: {
     type: String,
@@ -14,6 +12,10 @@ const PaymentSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
+    required: true,
+  },
+  date: {
+    type: Date,
     required: true,
   },
   description: {
@@ -24,6 +26,10 @@ const PaymentSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+}, {
+  timestamps: true,
 });
 
-module.exports = mongoose.model('Payment', PaymentSchema);
+const Payment = mongoose.model('Payment', paymentSchema);
+
+module.exports = Payment;

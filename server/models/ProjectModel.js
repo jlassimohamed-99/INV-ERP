@@ -24,9 +24,13 @@ const projectSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['To Do', 'In Progress', 'Done'],
     required: true,
-    default: 'To Do',
+    enum: ['To Do', 'In Progress', 'Done'],
+  },
+  responsable: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
   isDeleted: {
     type: Boolean,

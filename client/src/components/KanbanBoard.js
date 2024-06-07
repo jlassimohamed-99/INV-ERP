@@ -1,53 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import './KanbanBoard.css';
 
-const KanbanBoard = () => {
+const KanbanBoard = ({ onReturn, projectId }) => {
   const [tasks, setTasks] = useState([]);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    due_date: '',
-    responsible: '',
-    client: '',
-    status: 'To Do',
-  });
   const [isFormShown, setIsFormShown] = useState(false);
-  const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [formData, setFormData] = useState({ title: '', description: '', due_date: '', responsable: '', status: 'To Do' });
+  const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks', {
+      const response = await axios.get(`http://localhost:5000/api/tasks?projectId=${projectId}`, {
         headers: { token: localStorage.getItem('token') },
       });
       setTasks(response.data);
     } catch (err) {
-      console.error('Error fetching tasks:', err);
+      console.error(err);
     }
-  };
+  }, [projectId]);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/users', {
+        headers: { token: localStorage.getItem('token') },
+      });
+      const employees = response.data.filter(user => user.role === 'admin' || user.role === 'chef d\'équipe');
+      setUsers(employees);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTasks();
+    fetchUsers();
+  }, [fetchTasks, fetchUsers]);
 
   const handleAddTask = () => {
-    setSelectedTaskId(null);
     setIsFormShown(true);
-    setFormData({
-      title: '',
-      description: '',
-      due_date: '',
-      responsible: '',
-      client: '',
-      status: 'To Do',
-    });
-  };
-
-  const handleEditTask = (task) => {
-    setSelectedTaskId(task._id);
-    setIsFormShown(true);
-    setFormData(task);
+    setFormData({ title: '', description: '', due_date: '', responsable: '', status: 'To Do' });
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -64,8 +56,8 @@ const KanbanBoard = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (selectedTaskId) {
-        await axios.put(`http://localhost:5000/api/tasks/${selectedTaskId}`, formData, {
+      if (formData._id) {
+        await axios.put(`http://localhost:5000/api/tasks/${formData._id}`, formData, {
           headers: { token: localStorage.getItem('token') },
         });
       } else {
@@ -80,23 +72,33 @@ const KanbanBoard = () => {
     }
   };
 
-  const handleDragEnd = async (result) => {
-    if (!result.destination) return;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTasks(prevTasks => prevTasks.map(task => {
+        if (task.status !== 'Done' && new Date(task.due_date) < new Date()) {
+          return { ...task, status: 'Overdue' };
+        }
+        return task;
+      }));
+    }, 1000 * 60 * 60); // Check every hour
+    return () => clearInterval(interval);
+  }, []);
 
-    const items = Array.from(tasks);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    reorderedItem.status = result.destination.droppableId;
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setTasks(items);
-
-    try {
-      await axios.put(`http://localhost:5000/api/tasks/${reorderedItem._id}`, reorderedItem, {
-        headers: { token: localStorage.getItem('token') },
-      });
-    } catch (err) {
-      console.error('Error updating task status:', err);
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
     }
+
+    const updatedTasks = Array.from(tasks);
+    const [movedTask] = updatedTasks.splice(result.source.index, 1);
+    movedTask.status = result.destination.droppableId;
+    updatedTasks.splice(result.destination.index, 0, movedTask);
+    setTasks(updatedTasks);
+
+    // Update the task status in the backend
+    axios.put(`http://localhost:5000/api/tasks/${movedTask._id}`, movedTask, {
+      headers: { token: localStorage.getItem('token') },
+    }).catch(err => console.error('Error updating task status:', err));
   };
 
   return (
@@ -104,6 +106,7 @@ const KanbanBoard = () => {
       <div className="header">
         <h2>Kanban Board</h2>
         <button onClick={handleAddTask}>+ Add Task</button>
+        <button onClick={onReturn}>Return to Project Management</button>
       </div>
       {isFormShown && (
         <div className="form-container">
@@ -120,29 +123,26 @@ const KanbanBoard = () => {
               type="text"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              required
             />
             <label>Due Date</label>
             <input
               type="date"
-              value={formData.due_date.split('T')[0]}
+              value={formData.due_date}
               onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-              required
             />
             <label>Responsible</label>
-            <input
-              type="text"
-              value={formData.responsible}
-              onChange={(e) => setFormData({ ...formData, responsible: e.target.value })}
+            <select
+              value={formData.responsable}
+              onChange={(e) => setFormData({ ...formData, responsable: e.target.value })}
               required
-            />
-            <label>Client</label>
-            <input
-              type="text"
-              value={formData.client}
-              onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-              required
-            />
+            >
+              <option value="">Select Responsible</option>
+              {users.map(user => (
+                <option key={user._id} value={user._id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
             <label>Status</label>
             <select
               value={formData.status}
@@ -151,47 +151,48 @@ const KanbanBoard = () => {
               <option value="To Do">To Do</option>
               <option value="In Progress">In Progress</option>
               <option value="Done">Done</option>
+              <option value="Overdue" disabled={true}>Overdue</option>
             </select>
             <button type="submit">Save</button>
             <button type="button" onClick={() => setIsFormShown(false)}>Cancel</button>
           </form>
         </div>
       )}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        {['To Do', 'In Progress', 'Done'].map((status) => (
-          <Droppable droppableId={status} key={status}>
-            {(provided) => (
-              <div
-                className="column"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                <h3>{status}</h3>
-                {tasks.filter((task) => task.status === status).map((task, index) => (
-                  <Draggable key={task._id} draggableId={task._id} index={index}>
-                    {(provided) => (
-                      <div
-                        className="task-card"
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        ref={provided.innerRef}
-                        onClick={() => handleEditTask(task)}
-                      >
-                        <h4>{task.title}</h4>
-                        <p>{task.description}</p>
-                        <p>Due Date: {new Date(task.due_date).toLocaleDateString()}</p>
-                        <p>Responsible: {task.responsible}</p>
-                        <p>Client: {task.client}</p>
-                        <button onClick={(e) => { e.stopPropagation(); handleDeleteTask(task._id); }}>Delete</button>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        ))}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="board-columns">
+          {['To Do', 'In Progress', 'Done', 'Overdue'].map(status => (
+            <Droppable key={status} droppableId={status}>
+              {(provided) => (
+                <div
+                  className="column"
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  <h3>{status}</h3>
+                  {tasks.filter(task => task.status === status).map((task, index) => (
+                    <Draggable key={task._id} draggableId={task._id} index={index}>
+                      {(provided) => (
+                        <div
+                          className="task-card"
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <h4>{task.title}</h4>
+                          <p>{task.description}</p>
+                          <p>Due Date: {new Date(task.due_date).toLocaleDateString()}</p>
+                          <p>Responsible: {users.find(user => user._id === task.responsable)?.name || 'N/A'}</p>
+                          <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
       </DragDropContext>
     </div>
   );

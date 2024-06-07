@@ -4,11 +4,13 @@ const Task = require('../models/taskModel');
 // Get tasks for a project
 const getTasks = async (req, res) => {
   try {
-    const projectId = new mongoose.Types.ObjectId(req.params.projectId.trim());
-    console.log(`Fetching tasks for project ID: ${projectId}`);
-    const tasks = await Task.find({ projectId: projectId, isDeleted: false });
+    const projectId = req.query.projectId ? new mongoose.Types.ObjectId(req.query.projectId.trim()) : null;
+    const query = { isDeleted: false };
+    if (projectId) query.projectId = projectId;
+    const tasks = await Task.find(query).populate('responsable', 'name').populate('projectId', 'name');
     res.json(tasks);
   } catch (err) {
+    console.error('Error fetching tasks:', err);
     res.status(500).send('Server error');
   }
 };
@@ -16,9 +18,7 @@ const getTasks = async (req, res) => {
 // Get all tasks
 const getAllTasks = async (req, res) => {
   try {
-    console.log('Fetching all tasks');
-    const tasks = await Task.find({ isDeleted: false });
-    console.log(`Found tasks:`, tasks);
+    const tasks = await Task.find({ isDeleted: false }).populate('responsable', 'name').populate('projectId', 'name');
     res.json(tasks);
   } catch (err) {
     console.error('Error fetching all tasks:', err);
@@ -26,22 +26,33 @@ const getAllTasks = async (req, res) => {
   }
 };
 
-// Create a new task
 const createTask = async (req, res) => {
-  const { title, description, status, due_date, responsible, client, projectId } = req.body;
   try {
-    const newTask = new Task({ title, description, status, due_date, responsible, client, projectId });
-    const task = await newTask.save();
-    res.json(task);
+    const { title, description, due_date, status, responsable, projectId } = req.body;
+
+    // Ensure responsable and projectId are valid ObjectIds
+
+
+    const task = new Task({
+      title,
+      description,
+      due_date,
+      status,
+      responsable: new mongoose.Types.ObjectId(responsable),
+      projectId: new mongoose.Types.ObjectId(projectId),
+    });
+
+    await task.save();
+    res.status(201).json(task);
   } catch (err) {
     console.error('Error creating task:', err);
-    res.status(500).send('Server error');
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
 // Update a task
 const updateTask = async (req, res) => {
-  const { title, description, status, due_date, responsible, client } = req.body;
+  const { title, description, status, due_date, responsable } = req.body;
   try {
     let task = await Task.findById(req.params.id);
     if (!task) {
@@ -51,8 +62,7 @@ const updateTask = async (req, res) => {
     task.description = description;
     task.status = status;
     task.due_date = due_date;
-    task.responsible = responsible;
-    task.client = client;
+    task.responsable = new mongoose.Types.ObjectId(responsable);
 
     await task.save();
     res.json(task);

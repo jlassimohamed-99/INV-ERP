@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.put(`http://localhost:5000/api/users/${userId}`, updatedData, {
         headers: {
-          'x-auth-token': localStorage.getItem('token'),
+          'token': localStorage.getItem('token'),
         },
       });
       const updatedUser = response.data;

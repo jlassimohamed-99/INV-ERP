@@ -1,22 +1,30 @@
 const Project = require('../models/ProjectModel');
+const mongoose = require('mongoose');
 
 // Get all projects
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ isDeleted: false });
+    const projects = await Project.find({ isDeleted: false }).populate('responsable', 'name');
     res.json(projects);
   } catch (err) {
     console.error('Error fetching projects:', err);
-    res.status(500).send('Server error');
+    res.status(500).send(err);
   }
 };
 
-// Create a new project
 const createProject = async (req, res) => {
-  const { name, description, startDate, endDate, status } = req.body;
+  const { name, description, startDate, endDate, status, responsable } = req.body;
 
   try {
-    const newProject = new Project({ name, description, startDate, endDate, status });
+    const newProject = new Project({
+      name,
+      description,
+      startDate,
+      endDate,
+      status,
+      responsable: new mongoose.Types.ObjectId(responsable) // Use new to create ObjectId
+    });
+
     const project = await newProject.save();
     res.json(project);
   } catch (err) {
@@ -27,7 +35,7 @@ const createProject = async (req, res) => {
 
 // Update a project
 const updateProject = async (req, res) => {
-  const { name, description, startDate, endDate, status } = req.body;
+  const { name, description, startDate, endDate, status, responsable } = req.body;
 
   try {
     let project = await Project.findById(req.params.id);
@@ -41,6 +49,7 @@ const updateProject = async (req, res) => {
     project.startDate = startDate;
     project.endDate = endDate;
     project.status = status;
+    project.responsable = new mongoose.Types.ObjectId(responsable);
 
     await project.save();
     res.json(project);

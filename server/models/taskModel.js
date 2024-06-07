@@ -14,21 +14,18 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  status: {
-    type: String,
-    enum: ['To Do', 'In Progress', 'Done'],
-    required: true,
-  },
   due_date: {
     type: Date,
     required: true,
   },
-  responsible: {
+  status: {
     type: String,
     required: true,
+    enum: ['To Do', 'In Progress', 'Done', 'Overdue'],
   },
-  client: {
-    type: String,
+  responsable: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   projectId: {

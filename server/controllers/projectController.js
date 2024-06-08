@@ -1,5 +1,5 @@
-const Project = require('../models/ProjectModel');
 const mongoose = require('mongoose');
+const Project = require('../models/ProjectModel');
 
 // Get all projects
 const getProjects = async (req, res) => {
@@ -15,6 +15,10 @@ const getProjects = async (req, res) => {
 const createProject = async (req, res) => {
   const { name, description, startDate, endDate, status, responsable } = req.body;
 
+  if (!mongoose.Types.ObjectId.isValid(responsable)) {
+    return res.status(400).json({ error: 'Invalid responsable ObjectId' });
+  }
+
   try {
     const newProject = new Project({
       name,
@@ -22,7 +26,7 @@ const createProject = async (req, res) => {
       startDate,
       endDate,
       status,
-      responsable: new mongoose.Types.ObjectId(responsable) // Use new to create ObjectId
+      responsable: mongoose.Types.ObjectId(responsable)
     });
 
     const project = await newProject.save();
@@ -37,6 +41,10 @@ const createProject = async (req, res) => {
 const updateProject = async (req, res) => {
   const { name, description, startDate, endDate, status, responsable } = req.body;
 
+  if (!mongoose.Types.ObjectId.isValid(responsable)) {
+    return res.status(400).json({ error: 'Invalid responsable ObjectId' });
+  }
+
   try {
     let project = await Project.findById(req.params.id);
 
@@ -49,7 +57,7 @@ const updateProject = async (req, res) => {
     project.startDate = startDate;
     project.endDate = endDate;
     project.status = status;
-    project.responsable = new mongoose.Types.ObjectId(responsable);
+    project.responsable = mongoose.Types.ObjectId(responsable);
 
     await project.save();
     res.json(project);

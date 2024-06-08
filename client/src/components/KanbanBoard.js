@@ -6,7 +6,7 @@ import './KanbanBoard.css';
 const KanbanBoard = ({ onReturn, projectId }) => {
   const [tasks, setTasks] = useState([]);
   const [isFormShown, setIsFormShown] = useState(false);
-  const [formData, setFormData] = useState({ title: '', description: '', due_date: '', responsable: '', status: 'To Do' });
+  const [formData, setFormData] = useState({ title: '', description: '', due_date: '', responsable: '', status: 'To Do', projectId: projectId });
   const [users, setUsers] = useState([]);
 
   const fetchTasks = useCallback(async () => {
@@ -39,7 +39,12 @@ const KanbanBoard = ({ onReturn, projectId }) => {
 
   const handleAddTask = () => {
     setIsFormShown(true);
-    setFormData({ title: '', description: '', due_date: '', responsable: '', status: 'To Do' });
+    setFormData({ title: '', description: '', due_date: '', responsable: '', status: 'To Do', projectId: projectId });
+  };
+
+  const handleEditTask = (task) => {
+    setIsFormShown(true);
+    setFormData(task);
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -182,6 +187,7 @@ const KanbanBoard = ({ onReturn, projectId }) => {
                           <p>{task.description}</p>
                           <p>Due Date: {new Date(task.due_date).toLocaleDateString()}</p>
                           <p>Responsible: {users.find(user => user._id === task.responsable)?.name || 'N/A'}</p>
+                          <button onClick={() => handleEditTask(task)}>Edit</button>
                           <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
                         </div>
                       )}

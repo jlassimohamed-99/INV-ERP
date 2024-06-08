@@ -24,12 +24,12 @@ const taskSchema = new mongoose.Schema({
     enum: ['To Do', 'In Progress', 'Done', 'Overdue'],
   },
   responsable: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true,
   },
   projectId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'Project',
     required: true,
   },

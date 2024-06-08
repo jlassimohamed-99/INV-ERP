@@ -28,7 +28,7 @@ const projectSchema = new mongoose.Schema({
     enum: ['To Do', 'In Progress', 'Done'],
   },
   responsable: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true,
   },

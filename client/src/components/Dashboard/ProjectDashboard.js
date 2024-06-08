@@ -55,7 +55,7 @@ const ProjectDashboard = ({ onProjectClick }) => {
       startDate: new Date(project.startDate).toISOString().split('T')[0],
       endDate: new Date(project.endDate).toISOString().split('T')[0],
       status: project.status,
-      responsable: project.responsable ? project.responsable._id : ''
+      responsable: project.responsable // Store as string
     });
   };
 

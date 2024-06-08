@@ -37,7 +37,7 @@ const FinanceDashboard = () => {
   const [paiements, setPaiements] = useState([]);
   const [selectedPaiement, setSelectedPaiement] = useState(null);
   const [isFormShown, setIsFormShown] = useState(false);
-  const [formData, setFormData] = useState({ type: '', amount: '', description: '' });
+  const [formData, setFormData] = useState({ type: '', amount: '', description: '', date: '' });
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -60,21 +60,25 @@ const FinanceDashboard = () => {
   const handleAddPaiement = () => {
     setSelectedPaiement(null);
     setIsFormShown(true);
-    setFormData({ type: '', amount: '', description: '' });
+    setFormData({ type: '', amount: '', description: '', date: '' });
   };
 
   const handleEditPaiement = (paiement) => {
     setSelectedPaiement(paiement);
     setIsFormShown(true);
-    setFormData(paiement);
+    setFormData({
+      type: paiement.type,
+      amount: paiement.amount,
+      description: paiement.description,
+      date: paiement.date.split('T')[0] // Format date for input[type="date"]
+    });
   };
 
   const handleDeletePaiement = async (paiementId) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/payments/${paiementId}`, {
+      await axios.delete(`http://localhost:5000/api/payments/${paiementId}`, {
         headers: { token: localStorage.getItem('token') },
       });
-      console.log('Delete response:', response);
       fetchPaiements();
     } catch (err) {
       console.error('Erreur lors de la suppression du paiement:', err.response ? err.response.data : err.message);
@@ -83,7 +87,6 @@ const FinanceDashboard = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log('Envoi des données du formulaire:', formData);
     try {
       if (selectedPaiement) {
         await axios.put(`http://localhost:5000/api/payments/${selectedPaiement._id}`, formData, {
@@ -152,6 +155,7 @@ const FinanceDashboard = () => {
             <select
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              required
             >
               <option value="">Sélectionner le Type</option>
               <option value="facturation">Facturation</option>
@@ -170,6 +174,13 @@ const FinanceDashboard = () => {
               type="text"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              required
+            />
+            <label>Date</label>
+            <input
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               required
             />
             <button type="submit">Enregistrer</button>
@@ -198,6 +209,7 @@ const FinanceDashboard = () => {
               <th>Type</th>
               <th>Montant</th>
               <th>Description</th>
+              <th>Date</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -207,6 +219,7 @@ const FinanceDashboard = () => {
                 <td>{paiement.type}</td>
                 <td>{paiement.amount}</td>
                 <td>{paiement.description}</td>
+                <td>{new Date(paiement.date).toLocaleDateString()}</td>
                 <td>
                   <button onClick={() => handleEditPaiement(paiement)}>Modifier</button>
                   <button onClick={() => handleDeletePaiement(paiement._id)}>Supprimer</button>

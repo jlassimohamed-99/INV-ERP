@@ -4,7 +4,7 @@ const Task = require('../models/taskModel');
 // Get tasks for a project
 const getTasks = async (req, res) => {
   try {
-    const projectId = req.query.projectId ? new mongoose.Types.ObjectId(req.query.projectId.trim()) : null;
+    const projectId = req.query.projectId ? req.query.projectId.trim() : null;
     const query = { isDeleted: false };
     if (projectId) query.projectId = projectId;
     const tasks = await Task.find(query).populate('responsable', 'name').populate('projectId', 'name');
@@ -27,19 +27,20 @@ const getAllTasks = async (req, res) => {
 };
 
 const createTask = async (req, res) => {
+  const { title, description, due_date, status, responsable, projectId } = req.body;
+
+  if (!responsable || !projectId) {
+    return res.status(400).json({ error: 'responsable and projectId are required' });
+  }
+
   try {
-    const { title, description, due_date, status, responsable, projectId } = req.body;
-
-    // Ensure responsable and projectId are valid ObjectIds
-
-
     const task = new Task({
       title,
       description,
       due_date,
       status,
-      responsable: new mongoose.Types.ObjectId(responsable),
-      projectId: new mongoose.Types.ObjectId(projectId),
+      responsable,
+      projectId,
     });
 
     await task.save();
@@ -52,7 +53,12 @@ const createTask = async (req, res) => {
 
 // Update a task
 const updateTask = async (req, res) => {
-  const { title, description, status, due_date, responsable } = req.body;
+  const { title, description, status, due_date, responsable, projectId } = req.body;
+
+  if (!responsable || !projectId) {
+    return res.status(400).json({ error: 'responsable and projectId are required' });
+  }
+
   try {
     let task = await Task.findById(req.params.id);
     if (!task) {
@@ -62,7 +68,8 @@ const updateTask = async (req, res) => {
     task.description = description;
     task.status = status;
     task.due_date = due_date;
-    task.responsable = new mongoose.Types.ObjectId(responsable);
+    task.responsable = responsable;
+    task.projectId = projectId;
 
     await task.save();
     res.json(task);

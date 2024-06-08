@@ -10,43 +10,29 @@ const register = async (req, res) => {
   const { name, email, password, role, phone } = req.body;
 
   try {
-    let user = await User.findOne({ email });
-
-    if (user) {
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    user = new User({
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create a new user
+    const newUser = new User({
       name,
       email,
-      password,
+      password: hashedPassword,
       role,
-      phone
+      phone,
     });
 
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    await newUser.save();
 
-    await user.save();
-
-    const payload = {
-      user: {
-        id: user.id,
-        role: user.role
-      }
-    };
-
-    jwt.sign(
-      payload,
-      jwtSecret,
-      { expiresIn: '5h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
   } catch (err) {
-    console.error(err.message);
+    console.error('Error registering user:', err);
     res.status(500).send('Server error');
   }
 };
@@ -78,7 +64,6 @@ const login = async (req, res) => {
     jwt.sign(
       payload,
       jwtSecret,
-      { expiresIn: '5h' },
       (err, token) => {
         if (err) throw err;
         res.json({ token, user: payload.user });

@@ -12,29 +12,36 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 250px;
+  width: 60px;
   background-color: #2c3e50;
   color: white;
   padding: 10px;
   transition: width 0.3s;
-  position: relative; /* Ensures the logout button stays at the bottom */
+  position: relative;
 }
 
 .sidebar.open {
   width: 250px;
 }
 
+.sidebar.closed {
+  width: 60px;
+}
+
 .sidebar-menu {
   flex-grow: 1;
   list-style: none;
   padding: 0;
+  margin-top: 50px;
 }
 
 .sidebar-menu li {
   margin: 10px 0;
 }
 
-.sidebar button {
+.sidebar-menu li button {
+  display: flex;
+  align-items: center;
   width: 100%;
   padding: 10px;
   color: white;
@@ -44,8 +51,13 @@
   cursor: pointer;
 }
 
-.sidebar button:hover {
+.sidebar-menu li button:hover {
   background-color: #34495e;
+}
+
+.sidebar-menu li button span {
+  margin-left: 10px;
+  display: inline-block;
 }
 
 .logout-btn {
@@ -55,7 +67,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  position: absolute; /* Places the logout button at the bottom */
+  position: absolute;
   bottom: 10px;
 }
 
@@ -65,10 +77,10 @@
 }
 
 .toggle-sidebar-btn {
-  margin-bottom: 20px;
   background: none;
   border: none;
   color: white;
   font-size: 24px;
   cursor: pointer;
+  align-self: flex-end;
 }

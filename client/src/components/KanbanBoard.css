@@ -45,7 +45,11 @@ form input, form select {
 }
 
 form button {
-  margin-right: 10px;
+  margin: 5px;
+  display: flex;
+  padding: 8px;
+  width: 100%;
+  justify-content: center;
 }
 /* KanbanBoard.css */
 .kanban-board .header {

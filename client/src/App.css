@@ -1,7 +1,6 @@
 /* Reset some basic elements to remove margin and padding */
 body, html, div, ul, li, button {
-  margin: 0;
-  padding: 0;
+  
   box-sizing: border-box;
   font-family: Arial, sans-serif;
 }
@@ -19,14 +18,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #007bff;
+  background-color: #784197;
   color: white;
   padding: 10px 20px;
 }
 
 .leftNav {
   width: 260px;
-  background-color: #343a40;
+  background-color: #351c50;
   color: white;
   padding: 20px;
 }
@@ -77,22 +76,21 @@ body {
 }
 
 .sidebar.open {
-  width: 60px;
+  width: 7%;
 }
 
 .sidebar.closed {
-  width: 250px;
+  width: 20%;
 }
 
 .toggle-sidebar-btn {
   background: none;
+  width: fit-content;
+  display: contents;
   border: none;
-  color: white;
-  font-size: 24px;
+  color: #fff;
   cursor: pointer;
-  position: absolute;
-  top: 1px;
-  right: 3px;
+  font-size: 24px;
 }
 
 .sidebar-menu {

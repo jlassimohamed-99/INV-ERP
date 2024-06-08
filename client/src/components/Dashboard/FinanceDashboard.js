@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Modal from 'react-modal';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,6 +30,8 @@ ChartJS.register(
   LineElement,
   RadialLinearScale
 );
+
+Modal.setAppElement('#root');
 
 const FinanceDashboard = () => {
   const [paiements, setPaiements] = useState([]);
@@ -136,7 +139,13 @@ const FinanceDashboard = () => {
           <button onClick={handleLogout} className="logout-button">Se Déconnecter</button>
         )}
       </div>
-      {isFormShown && (
+      <Modal
+        isOpen={isFormShown}
+        onRequestClose={() => setIsFormShown(false)}
+        contentLabel="Formulaire de Paiement"
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
         <div className="form-container">
           <form onSubmit={handleFormSubmit}>
             <label>Type</label>
@@ -167,7 +176,7 @@ const FinanceDashboard = () => {
             <button type="button" onClick={() => setIsFormShown(false)}>Annuler</button>
           </form>
         </div>
-      )}
+      </Modal>
       <div className="charts-container">
         <div className="chart">
           <h3>Diagramme à Barres</h3>

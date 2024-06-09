@@ -1,11 +1,16 @@
 .project-dashboard {
   padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .header h2 {
@@ -13,37 +18,54 @@
 }
 
 .header button {
-  padding: 10px;
+  padding: 10px 20px;
   font-size: 16px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.header button:hover {
+  background-color: #0056b3;
 }
 
 .form-container {
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .form-container form {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .form-container form label {
-  margin-bottom: 5px;
+  font-weight: bold;
 }
 
-.form-container form input {
-  margin-bottom: 15px;
-  padding: 8px;
-  font-size: 16px;
+.form-container form input,
+.form-container form select,
+.form-container form button {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .form-container form button {
-  padding: 10px;
-  font-size: 16px;
-  margin-right: 10px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.form-container form button:hover {
+  background-color: #0056b3;
 }
 
 .table-container {
-  margin-top: 20px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .table-container table {
@@ -53,13 +75,13 @@
 
 .table-container table th,
 .table-container table td {
+  padding: 10px;
   border: 1px solid #ddd;
-  padding: 8px;
   text-align: left;
 }
 
 .table-container table th {
-  background-color: #f4f4f4;
+  background-color: #f8f9fa;
 }
 
 .table-container table tbody tr:hover {
@@ -67,7 +89,16 @@
 }
 
 .table-container table tbody tr td button {
-  margin-right: 10px;
+  margin-right: 5px;
   padding: 5px 10px;
   font-size: 14px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+}
+
+.table-container table tbody tr td button:hover {
+  background-color: #0056b3;
 }

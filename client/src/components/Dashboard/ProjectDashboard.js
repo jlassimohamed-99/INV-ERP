@@ -33,10 +33,10 @@ const ProjectDashboard = ({ onProjectClick }) => {
       const response = await axios.get('http://localhost:5000/api/users', {
         headers: { token: localStorage.getItem('token') },
       });
-      const employees = response.data.filter(user => user.role === 'admin' || user.role === 'chef d\'équipe');
-      setUsers(employees);
+      const filteredUsers = response.data.filter(user => user.role === 'admin' || user.role === 'chef de projet');
+      setUsers(filteredUsers);
     } catch (err) {
-      console.error('Error fetching users:', err);
+      console.error('Error fetching user details:', err);
     }
   };
 
@@ -161,9 +161,9 @@ const ProjectDashboard = ({ onProjectClick }) => {
               required
             >
               <option value="">Select Responsable</option>
-              {users.map(user => (
-                <option key={user._id} value={user._id}>
-                  {user.name}
+              {users.map(filteredUsers => (
+                <option key={filteredUsers._id} value={filteredUsers._id}>
+                  {filteredUsers.name}
                 </option>
               ))}
             </select>
@@ -181,7 +181,6 @@ const ProjectDashboard = ({ onProjectClick }) => {
               <th>Date de Début</th>
               <th>Date de Fin</th>
               <th>Statut</th>
-              <th>Responsable</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -193,7 +192,6 @@ const ProjectDashboard = ({ onProjectClick }) => {
                 <td>{new Date(project.startDate).toLocaleDateString()}</td>
                 <td>{new Date(project.endDate).toLocaleDateString()}</td>
                 <td>{project.status}</td>
-                <td>{users.find(user => user._id === project.responsable)?.name || 'N/A'}</td>
                 <td>
                   <button onClick={(e) => { e.stopPropagation(); handleEditProject(project); }}>Modifier</button>
                   <button onClick={(e) => { e.stopPropagation(); handleDeleteProject(project._id); }}>Supprimer</button>

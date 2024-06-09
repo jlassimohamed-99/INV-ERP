@@ -2,13 +2,23 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
+  height: 100vh; /* Full height of the viewport */
+
 }
 
-.header {
+.kanban-board .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+}
+
+.kanban-board .header button {
+  margin-left: 10px;
+}
+
+.board-columns {
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 .column {
@@ -17,6 +27,9 @@
   padding: 10px;
   background-color: #f0f0f0;
   border-radius: 5px;
+  min-width: 250px; /* Minimum width to keep columns usable */
+  max-height: 80vh; /* Limit height for vertical scrolling */
+  overflow-y: auto; /* Enable vertical scrolling for tasks within a column */
 }
 
 .task-card {
@@ -50,14 +63,4 @@ form button {
   padding: 8px;
   width: 100%;
   justify-content: center;
-}
-/* KanbanBoard.css */
-.kanban-board .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.kanban-board .header button {
-  margin-left: 10px;
 }

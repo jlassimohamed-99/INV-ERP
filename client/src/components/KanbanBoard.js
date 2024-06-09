@@ -6,8 +6,8 @@ import './KanbanBoard.css';
 const KanbanBoard = ({ onReturn, projectId }) => {
   const [tasks, setTasks] = useState([]);
   const [isFormShown, setIsFormShown] = useState(false);
-  const [formData, setFormData] = useState({ title: '', description: '', due_date: '', responsable: '', status: 'To Do', projectId: projectId });
-  const [users, setUsers] = useState([]);
+  const [formData, setFormData] = useState({ title: '', description: '', due_date: '', status: 'To Do', projectId: projectId, responsable: '' });
+  const [employees, setEmployees] = useState([]);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -16,30 +16,30 @@ const KanbanBoard = ({ onReturn, projectId }) => {
       });
       setTasks(response.data);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching tasks:', err);
     }
   }, [projectId]);
 
-  const fetchUsers = useCallback(async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/users', {
         headers: { token: localStorage.getItem('token') },
       });
-      const employees = response.data.filter(user => user.role === 'admin' || user.role === 'chef d\'équipe');
-      setUsers(employees);
+      const employees = response.data.filter(user => user.role === 'employee');
+      setEmployees(employees);
     } catch (err) {
-      console.error('Error fetching users:', err);
+      console.error('Error fetching employees:', err);
     }
   }, []);
 
   useEffect(() => {
     fetchTasks();
-    fetchUsers();
-  }, [fetchTasks, fetchUsers]);
+    fetchEmployees();
+  }, [fetchTasks, fetchEmployees]);
 
   const handleAddTask = () => {
     setIsFormShown(true);
-    setFormData({ title: '', description: '', due_date: '', responsable: '', status: 'To Do', projectId: projectId });
+    setFormData({ title: '', description: '', due_date: '', status: 'To Do', projectId: projectId, responsable: '' });
   };
 
   const handleEditTask = (task) => {
@@ -61,35 +61,32 @@ const KanbanBoard = ({ onReturn, projectId }) => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        due_date: formData.due_date,
+        status: formData.status,
+        responsable: formData.responsable,
+        projectId: formData.projectId
+      };
+
       if (formData._id) {
-        await axios.put(`http://localhost:5000/api/tasks/${formData._id}`, formData, {
+        await axios.put(`http://localhost:5000/api/tasks/${formData._id}`, payload, {
           headers: { token: localStorage.getItem('token') },
         });
       } else {
-        await axios.post('http://localhost:5000/api/tasks', formData, {
+        await axios.post('http://localhost:5000/api/tasks', payload, {
           headers: { token: localStorage.getItem('token') },
         });
       }
-      fetchTasks();
+      await fetchTasks();
       setIsFormShown(false);
     } catch (err) {
       console.error('Error submitting form:', err);
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTasks(prevTasks => prevTasks.map(task => {
-        if (task.status !== 'Done' && new Date(task.due_date) < new Date()) {
-          return { ...task, status: 'Overdue' };
-        }
-        return task;
-      }));
-    }, 1000 * 60 * 60); // Check every hour
-    return () => clearInterval(interval);
-  }, []);
-
-  const onDragEnd = (result) => {
+  const onDragEnd = async (result) => {
     if (!result.destination) {
       return;
     }
@@ -101,10 +98,27 @@ const KanbanBoard = ({ onReturn, projectId }) => {
     setTasks(updatedTasks);
 
     // Update the task status in the backend
-    axios.put(`http://localhost:5000/api/tasks/${movedTask._id}`, movedTask, {
-      headers: { token: localStorage.getItem('token') },
-    }).catch(err => console.error('Error updating task status:', err));
+    try {
+      await axios.put(`http://localhost:5000/api/tasks/${movedTask._id}`, movedTask, {
+        headers: { token: localStorage.getItem('token') },
+      });
+      fetchTasks(); // Ensure tasks are refreshed after the update
+    } catch (err) {
+      console.error('Error updating task status:', err);
+    }
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTasks(prevTasks => prevTasks.map(task => {
+        if (task.status !== 'Done' && new Date(task.due_date) < new Date().setHours(0, 0, 0, 0)) {
+          return { ...task, status: 'Overdue' };
+        }
+        return task;
+      }));
+    }, 1000 * 60 * 60); // Check every hour
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="kanban-board">
@@ -135,14 +149,14 @@ const KanbanBoard = ({ onReturn, projectId }) => {
               value={formData.due_date}
               onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
             />
-            <label>Responsible</label>
+            <label>Responsable</label>
             <select
               value={formData.responsable}
               onChange={(e) => setFormData({ ...formData, responsable: e.target.value })}
               required
             >
-              <option value="">Select Responsible</option>
-              {users.map(user => (
+              <option value="">Select Responsable</option>
+              {employees.map(user => (
                 <option key={user._id} value={user._id}>
                   {user.name}
                 </option>
@@ -174,26 +188,27 @@ const KanbanBoard = ({ onReturn, projectId }) => {
                   {...provided.droppableProps}
                 >
                   <h3>{status}</h3>
-                  {tasks.filter(task => task.status === status).map((task, index) => (
-                    <Draggable key={task._id} draggableId={task._id} index={index}>
-                      {(provided) => (
-                        <div
-                          className="task-card"
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <h4>{task.title}</h4>
-                          <p>{task.description}</p>
-                          <p>Due Date: {new Date(task.due_date).toLocaleDateString()}</p>
-                          <p>Responsible: {users.find(user => user._id === task.responsable)?.name || 'N/A'}</p>
-                          <button onClick={() => handleEditTask(task)}>Edit</button>
-                          <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
+                  <div className="tasks-container">
+                    {tasks.filter(task => task.status === status).map((task, index) => (
+                      <Draggable key={task._id} draggableId={task._id} index={index}>
+                        {(provided) => (
+                          <div
+                            className="task-card"
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <h4>{task.title}</h4>
+                            <p>{task.description}</p>
+                            <p>Due Date: {new Date(task.due_date).toLocaleDateString()}</p>
+                            <button onClick={() => handleEditTask(task)}>Edit</button>
+                            <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
                 </div>
               )}
             </Droppable>

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const Project = require('../models/ProjectModel');
+const Project = require('../models/projectModel');
 
-// Get all projects
 const getProjects = async (req, res) => {
   try {
     const projects = await Project.find({ isDeleted: false }).populate('responsable', 'name');
@@ -15,10 +14,6 @@ const getProjects = async (req, res) => {
 const createProject = async (req, res) => {
   const { name, description, startDate, endDate, status, responsable } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(responsable)) {
-    return res.status(400).json({ error: 'Invalid responsable ObjectId' });
-  }
-
   try {
     const newProject = new Project({
       name,
@@ -26,7 +21,7 @@ const createProject = async (req, res) => {
       startDate,
       endDate,
       status,
-      responsable: mongoose.Types.ObjectId(responsable)
+      responsable,
     });
 
     const project = await newProject.save();
@@ -37,13 +32,8 @@ const createProject = async (req, res) => {
   }
 };
 
-// Update a project
 const updateProject = async (req, res) => {
   const { name, description, startDate, endDate, status, responsable } = req.body;
-
-  if (!mongoose.Types.ObjectId.isValid(responsable)) {
-    return res.status(400).json({ error: 'Invalid responsable ObjectId' });
-  }
 
   try {
     let project = await Project.findById(req.params.id);
@@ -57,7 +47,7 @@ const updateProject = async (req, res) => {
     project.startDate = startDate;
     project.endDate = endDate;
     project.status = status;
-    project.responsable = mongoose.Types.ObjectId(responsable);
+    project.responsable = responsable;
 
     await project.save();
     res.json(project);
@@ -67,7 +57,6 @@ const updateProject = async (req, res) => {
   }
 };
 
-// Soft delete a project
 const deleteProject = async (req, res) => {
   try {
     let project = await Project.findById(req.params.id);

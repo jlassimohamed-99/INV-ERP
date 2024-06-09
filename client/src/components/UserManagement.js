@@ -9,7 +9,7 @@ const UserManagement = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/users', {
           headers: {
-            'x-auth-token': localStorage.getItem('token')
+            'token': localStorage.getItem('token')
           }
         });
         setUsers(response.data);

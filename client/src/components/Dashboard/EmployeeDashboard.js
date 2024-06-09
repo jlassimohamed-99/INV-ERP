@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTasks, faCalendarAlt, faSignOutAlt, faBars } from '@fortawesome/free-solid-svg-icons';
+import LogoutButton from '../LogoutButton'; // Assuming LogoutButton is a separate component
 import './EmployeeDashboard.css';
 
 const EmployeeDashboard = () => {
@@ -62,28 +65,33 @@ const EmployeeDashboard = () => {
     <div className="employee-dashboard">
       <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <button className="toggle-sidebar-btn" onClick={toggleSidebar}>
-          {sidebarOpen ? '<<' : '>>'}
+          <FontAwesomeIcon icon={faBars} />
         </button>
         <ul className="sidebar-menu">
           <li>
             <button onClick={() => setCurrentView('tasks')}>
-              <span>Tasks</span>
+              <FontAwesomeIcon icon={faTasks} />
+              {sidebarOpen && <span>Tasks</span>}
             </button>
           </li>
           <li>
             <button onClick={() => setCurrentView('conges')}>
-              <span>Demander un Congé</span>
+              <FontAwesomeIcon icon={faCalendarAlt} />
+              {sidebarOpen && <span>Demander un Congé</span>}
             </button>
           </li>
         </ul>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={handleLogout}>
+          <FontAwesomeIcon icon={faSignOutAlt} />
+          {sidebarOpen && <span>Logout</span>}
+        </button>
       </div>
       <div className="employee-dashboard-container">
         <div className="employee-dashboard-content">
           {currentView === 'tasks' && (
             <>
               <h2>Mes Tâches</h2>
-              <table>
+              <table className="tasks-table">
                 <thead>
                   <tr>
                     <th>Title</th>
@@ -132,7 +140,7 @@ const EmployeeDashboard = () => {
                 <button type="submit">Demander</button>
               </form>
               <h2>Mes Congés</h2>
-              <table>
+              <table className="conges-table">
                 <thead>
                   <tr>
                     <th>Date de Début</th>

@@ -2,12 +2,8 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const congeSchema = new Schema({
-  employeeName: {
-    type: String,
-    required: true
-  },
   employeeId: {
-    type: String,  // Corrected to string
+    type: String,  
     required: true,
     ref: 'User'
   },

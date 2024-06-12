@@ -2,7 +2,7 @@ const Conge = require('../models/congeModel');
 
 exports.getAllConges = async (req, res) => {
   try {
-    const conges = await Conge.find();
+    const conges = await Conge.find({ employeeId: req.user.id });
     res.status(200).json(conges);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -13,7 +13,7 @@ exports.createConge = async (req, res) => {
   const conge = new Conge({
     ...req.body,
     employeeName: req.user.name,
-    employeeId: req.user._id
+    employeeId: req.user.id
   });
 
   try {

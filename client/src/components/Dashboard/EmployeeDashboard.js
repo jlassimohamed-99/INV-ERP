@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTasks, faCalendarAlt, faSignOutAlt, faBars } from '@fortawesome/free-solid-svg-icons';
-import LogoutButton from '../LogoutButton'; // Assuming LogoutButton is a separate component
 import './EmployeeDashboard.css';
 
 const EmployeeDashboard = () => {
@@ -19,7 +18,8 @@ const EmployeeDashboard = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks', {
+      const userId = JSON.parse(localStorage.getItem('user')).id; // Assuming user info is stored in localStorage
+      const response = await axios.get(`http://localhost:5000/api/tasks/user/${userId}`, {
         headers: { token: localStorage.getItem('token') },
       });
       setTasks(response.data);
@@ -63,7 +63,7 @@ const EmployeeDashboard = () => {
 
   return (
     <div className="employee-dashboard">
-      <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+      <div className={`sidebar ${sidebarOpen ? 'closed' : 'open'}`}>
         <button className="toggle-sidebar-btn" onClick={toggleSidebar}>
           <FontAwesomeIcon icon={faBars} />
         </button>

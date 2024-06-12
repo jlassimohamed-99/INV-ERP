@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Task = require('../models/taskModel');
 
+// Existing functions...
+
 const getTasks = async (req, res) => {
   try {
     const projectId = req.query.projectId ? req.query.projectId.trim() : null;
@@ -24,6 +26,7 @@ const getAllTasks = async (req, res) => {
   }
 };
 
+
 const createTask = async (req, res) => {
   try {
     const { title, description, due_date, status, responsable, projectId } = req.body;
@@ -44,7 +47,6 @@ const createTask = async (req, res) => {
   }
 };
 
-// Update a task
 const updateTask = async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -54,16 +56,15 @@ const updateTask = async (req, res) => {
   }
 };
 
-// Delete a task
-exports.deleteTask = async (req, res) => {
+const getTasksByUserId = async (req, res) => {
   try {
-    await Task.findByIdAndUpdate(req.params.id, { isDeleted: true });
-    res.status(200).json({ message: 'Task deleted successfully' });
-  } catch (error) {
-    res.status(400).json({ message: 'Error deleting task', error });
+    const tasks = await Task.find({ responsable: req.params.userId, isDeleted: false }).populate('responsable', 'name').populate('projectId', 'name');
+    res.status(200).json(tasks);
+  } catch (err) {
+    console.error('Error fetching tasks by user ID:', err);
+    res.status(500).send('Server error');
   }
 };
-
 const deleteTask = async (req, res) => {
   try {
     let task = await Task.findById(req.params.id);
@@ -82,7 +83,9 @@ const deleteTask = async (req, res) => {
 module.exports = {
   getTasks,
   getAllTasks,
+  getTasksByUserId,
   createTask,
   updateTask,
+  getTasksByUserId,
   deleteTask
 };

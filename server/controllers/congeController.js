@@ -1,14 +1,14 @@
 const Conge = require('../models/congeModel');
+const User = require('../models/userModel'); // Ensure you have the User model imported
 
 exports.getAllConges = async (req, res) => {
   try {
-    const conges = await Conge.find({ employeeId: req.user.id });
+    const conges = await Conge.find({}).populate('employeeId', 'name'); // Populate the employeeId field with the name field from the User model
     res.status(200).json(conges);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
 exports.createConge = async (req, res) => {
   const conge = new Conge({
     ...req.body,

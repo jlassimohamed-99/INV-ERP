@@ -34,6 +34,7 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
       } else {
         await register({ name, email, password, role, phone });
       }
+      console.log('Employee added/updated successfully'); // Debugging
       onEmployeeAdded();
       setIsFormShown(false);
     } catch (error) {

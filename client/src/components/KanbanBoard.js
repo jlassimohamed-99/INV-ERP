@@ -11,10 +11,16 @@ const KanbanBoard = ({ onReturn, projectId }) => {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/tasks?projectId=${projectId}`, {
+      const response = await axios.get(`http://localhost:5000/api/tasks/${projectId}`, {
         headers: { token: localStorage.getItem('token') },
       });
-      setTasks(response.data);
+      const tasksWithOverdueStatus = response.data.map(task => {
+        if (new Date(task.due_date) < new Date() && task.status !== 'Done') {
+          return { ...task, status: 'Overdue' };
+        }
+        return task;
+      });
+      setTasks(tasksWithOverdueStatus);
     } catch (err) {
       console.error('Error fetching tasks:', err);
     }
@@ -44,7 +50,10 @@ const KanbanBoard = ({ onReturn, projectId }) => {
 
   const handleEditTask = (task) => {
     setIsFormShown(true);
-    setFormData(task);
+    setFormData({
+      ...task,
+      due_date: task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : ''
+    });
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -87,9 +96,7 @@ const KanbanBoard = ({ onReturn, projectId }) => {
   };
 
   const onDragEnd = async (result) => {
-    if (!result.destination) {
-      return;
-    }
+    if (!result.destination) return;
 
     const updatedTasks = Array.from(tasks);
     const [movedTask] = updatedTasks.splice(result.source.index, 1);
@@ -99,26 +106,13 @@ const KanbanBoard = ({ onReturn, projectId }) => {
 
     // Update the task status in the backend
     try {
-      await axios.put(`http://localhost:5000/api/tasks/${movedTask._id}`, movedTask, {
+      await axios.put(`http://localhost:5000/api/tasks/${movedTask._id}`, { status: movedTask.status }, {
         headers: { token: localStorage.getItem('token') },
       });
-      fetchTasks(); // Ensure tasks are refreshed after the update
     } catch (err) {
       console.error('Error updating task status:', err);
     }
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTasks(prevTasks => prevTasks.map(task => {
-        if (task.status !== 'Done' && new Date(task.due_date) < new Date().setHours(0, 0, 0, 0)) {
-          return { ...task, status: 'Overdue' };
-        }
-        return task;
-      }));
-    }, 1000 * 60 * 60); // Check every hour
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="kanban-board">
@@ -180,20 +174,20 @@ const KanbanBoard = ({ onReturn, projectId }) => {
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="board-columns">
           {['To Do', 'In Progress', 'Done', 'Overdue'].map(status => (
-            <Droppable key={status} droppableId={status}>
+            <Droppable key={status} droppableId={status} isDropDisabled={status === 'Overdue'}>
               {(provided) => (
                 <div
-                  className="column"
+                  className={`column ${status.toLowerCase()}`}
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
                   <h3>{status}</h3>
-                  <div className="tasks-container">
+                  <div className="tasks-container" {...provided.droppableProps} ref={provided.innerRef}>
                     {tasks.filter(task => task.status === status).map((task, index) => (
-                      <Draggable key={task._id} draggableId={task._id} index={index}>
+                      <Draggable key={task._id} draggableId={task._id} index={index} isDragDisabled={task.status === 'Overdue'}>
                         {(provided) => (
                           <div
-                            className="task-card"
+                            className={`task-card ${status.toLowerCase()}`}
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}

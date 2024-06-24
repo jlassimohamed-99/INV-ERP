@@ -94,7 +94,7 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
               onChange={(e) => setPhone(e.target.value)}
             />
           </div>
-          <button type="submit">{isEditMode ? 'Update Employee' : 'Add Employee'}</button>
+          <button type="submit" >{isEditMode ? 'Update Employee' : 'Add Employee'}</button>
           <button type="button" onClick={() => setIsFormShown(false)}>Cancel</button>
         </form>
       </div>

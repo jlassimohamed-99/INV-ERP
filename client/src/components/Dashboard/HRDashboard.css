@@ -314,3 +314,18 @@ body {
   cursor: pointer;
   border-radius: 5px;
 }
+
+.logout-button {
+  background-color: #f44336; /* Red background */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Padding for the button */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.logout-button:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}

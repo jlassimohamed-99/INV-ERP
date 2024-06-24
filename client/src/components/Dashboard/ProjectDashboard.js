@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import KanbanBoard from '../KanbanBoard';
 import './ProjectDashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 const ProjectDashboard = ({ onProjectClick }) => {
   const [projects, setProjects] = useState([]);
@@ -10,6 +11,8 @@ const ProjectDashboard = ({ onProjectClick }) => {
   const [isFormShown, setIsFormShown] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '', startDate: '', endDate: '', status: 'To Do', responsable: '' });
   const [showKanbanBoard, setShowKanbanBoard] = useState(false);
+  const navigate = useNavigate();
+  const role = localStorage.getItem('role');
 
   useEffect(() => {
     fetchProjects();
@@ -107,6 +110,12 @@ const ProjectDashboard = ({ onProjectClick }) => {
     setShowKanbanBoard(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    navigate('/login');
+  };
+
   if (showKanbanBoard) {
     return <KanbanBoard onReturn={handleReturn} projectId={selectedProjectId} />;
   }
@@ -116,6 +125,9 @@ const ProjectDashboard = ({ onProjectClick }) => {
       <div className="header">
         <h2>Tableau de Bord des Projets</h2>
         <button onClick={handleAddProject}>+ Ajouter un Projet</button>
+        {role !== 'admin' && (
+          <button onClick={handleLogout} className="logout-button">Se Déconnecter</button>
+        )}
       </div>
       {isFormShown && (
         <div className="form-container">

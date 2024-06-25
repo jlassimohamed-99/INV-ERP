@@ -5,6 +5,7 @@ import { faBars, faBell } from '@fortawesome/free-solid-svg-icons';
 import './HRDashboard.css';
 import LeftNav from '../LeftNav/LeftNav';
 import AddEmployeeForm from '../AddEmployeeForm';
+import { useNavigate } from 'react-router-dom';
 
 const HRDashboard = () => {
   const [employees, setEmployees] = useState([]);
@@ -14,6 +15,10 @@ const HRDashboard = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [showLeaveRequests, setShowLeaveRequests] = useState(false);
   const [leaves, setLeaves] = useState([]);
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const role = user ? user.role : null;
 
   const fetchEmployees = async () => {
     try {
@@ -44,6 +49,12 @@ const HRDashboard = () => {
     };
     fetchLeaves();
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   const handleEmployeeClick = (employee) => {
     setSelectedEmployee(employee);
@@ -124,6 +135,9 @@ const HRDashboard = () => {
                     <button onClick={handleEditEmployee}>Modify</button>
                     <button onClick={handleDeleteEmployee}>Delete</button>
                   </>
+                )}
+                {role !== 'admin' && (
+                  <button onClick={handleLogout} className="logout-button">Se Déconnecter</button>
                 )}
               </div>
             </>

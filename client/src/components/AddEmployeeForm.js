@@ -110,7 +110,7 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
             />
             {phoneError && <span className="error">{phoneError}</span>}
           </div>
-          <button type="submit">{isEditMode ? 'Update Employee' : 'Add Employee'}</button>
+          <button type="submit" >{isEditMode ? 'Update Employee' : 'Add Employee'}</button>
           <button type="button" onClick={() => setIsFormShown(false)}>Cancel</button>
         </form>
       </div>

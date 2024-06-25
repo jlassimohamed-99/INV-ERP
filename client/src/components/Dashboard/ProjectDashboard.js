@@ -11,6 +11,7 @@ const ProjectDashboard = ({ onProjectClick }) => {
   const [isFormShown, setIsFormShown] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '', startDate: '', endDate: '', status: 'To Do', responsable: '' });
   const [showKanbanBoard, setShowKanbanBoard] = useState(false);
+  const [dateError, setDateError] = useState('');
   const navigate = useNavigate();
   const role = localStorage.getItem('role');
 

@@ -10,6 +10,7 @@ const ProjectDashboard = ({ onProjectClick }) => {
   const [isFormShown, setIsFormShown] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '', startDate: '', endDate: '', status: 'To Do', responsable: '' });
   const [showKanbanBoard, setShowKanbanBoard] = useState(false);
+  const [dateError, setDateError] = useState('');
 
   useEffect(() => {
     fetchProjects();
@@ -44,6 +45,7 @@ const ProjectDashboard = ({ onProjectClick }) => {
     setSelectedProjectId(null);
     setIsFormShown(true);
     setFormData({ name: '', description: '', startDate: '', endDate: '', status: 'To Do', responsable: '' });
+    setDateError('');
   };
 
   const handleEditProject = (project) => {
@@ -55,8 +57,9 @@ const ProjectDashboard = ({ onProjectClick }) => {
       startDate: new Date(project.startDate).toISOString().split('T')[0],
       endDate: new Date(project.endDate).toISOString().split('T')[0],
       status: project.status,
-      responsable: project.responsable // Store as string
+      responsable: project.responsable
     });
+    setDateError('');
   };
 
   const handleDeleteProject = async (projectId) => {
@@ -72,6 +75,10 @@ const ProjectDashboard = ({ onProjectClick }) => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (new Date(formData.startDate) >= new Date(formData.endDate)) {
+      setDateError('Date de Début doit être avant la Date de Fin.');
+      return;
+    }
     try {
       const payload = {
         name: formData.name,
@@ -138,13 +145,16 @@ const ProjectDashboard = ({ onProjectClick }) => {
               type="date"
               value={formData.startDate}
               onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              required
             />
             <label>Date de Fin</label>
             <input
               type="date"
               value={formData.endDate}
               onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              required
             />
+            {dateError && <p className="error">{dateError}</p>}
             <label>Statut</label>
             <select
               value={formData.status}
@@ -167,7 +177,7 @@ const ProjectDashboard = ({ onProjectClick }) => {
                 </option>
               ))}
             </select>
-            <button type="submit">Enregistrer</button>
+            <button type="submit" disabled={new Date(formData.startDate) >= new Date(formData.endDate)}>Enregistrer</button>
             <button type="button" onClick={() => setIsFormShown(false)}>Annuler</button>
           </form>
         </div>

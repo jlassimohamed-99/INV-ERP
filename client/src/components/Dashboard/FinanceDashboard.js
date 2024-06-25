@@ -165,6 +165,7 @@ const FinanceDashboard = () => {
             <label>Montant</label>
             <input
               type="number"
+              min ={0}
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               required

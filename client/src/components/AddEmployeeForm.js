@@ -8,6 +8,7 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('employee');
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const { register, updateEmployee } = useAuth();
 
   useEffect(() => {
@@ -27,6 +28,10 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (phone.length !== 8) {
+      setPhoneError('Phone number must be exactly 8 characters long.');
+      return;
+    }
     try {
       if (isEditMode) {
         await updateEmployee(selectedEmployee._id, { name, email, role, phone });
@@ -39,6 +44,14 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
       setIsFormShown(false);
     } catch (error) {
       console.error('Failed to register:', error);
+    }
+  };
+
+  const handlePhoneChange = (e) => {
+    const value = e.target.value;
+    if (value.length <= 8) {
+      setPhone(value);
+      setPhoneError('');
     }
   };
 
@@ -89,10 +102,13 @@ function AddEmployeeForm({ setIsFormShown, onEmployeeAdded, isEditMode, setIsEdi
           <div className="form-group">
             <label>Phone</label>
             <input
-              type="text"
+              type="number"
+              min={0}
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              required
+              onChange={handlePhoneChange}
             />
+            {phoneError && <span className="error">{phoneError}</span>}
           </div>
           <button type="submit">{isEditMode ? 'Update Employee' : 'Add Employee'}</button>
           <button type="button" onClick={() => setIsFormShown(false)}>Cancel</button>
